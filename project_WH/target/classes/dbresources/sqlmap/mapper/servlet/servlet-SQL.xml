@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="servlet">
+
+	<select id="serVletTest" resultType="EgovMap">
+		<![CDATA[
+			SELECT 
+				DISTINCT
+				DVSN_1_NO,
+				DVSN_1_NM
+			FROM
+				BASE_TYPE
+			WHERE
+				IS_MEDIA = 'media'
+			ORDER BY DVSN_1_NO ASC
+		]]>
+	</select>
+</mapper>

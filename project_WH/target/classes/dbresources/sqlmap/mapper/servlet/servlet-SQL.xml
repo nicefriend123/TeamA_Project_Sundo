@@ -5,14 +5,11 @@
 	<select id="serVletTest" resultType="EgovMap">
 		<![CDATA[
 			SELECT 
-				DISTINCT
-				DVSN_1_NO,
-				DVSN_1_NM
+				FILENAME, FILEREALNAME
 			FROM
-				BASE_TYPE
+				UPLOAD
 			WHERE
-				IS_MEDIA = 'media'
-			ORDER BY DVSN_1_NO ASC
+				1=1
 		]]>
 	</select>
 </mapper>

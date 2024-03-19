@@ -22,4 +22,15 @@ public class ServletController {
 		
 		return "main/main";
 	}
+	
+	@RequestMapping("/test.do")
+	public String test() {
+		return "main/test";
+	}
+
+	@RequestMapping("/testtwo.do")
+	public String testTwo() {
+		return "main/testTwo";
+	}
+	
 }

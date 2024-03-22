@@ -63,73 +63,93 @@ $(function(){
   			})
   		});
   	
-	 map.addLayer(el_bjd);  
+	 //map.addLayer(el_bjd);  
    
  // 1. 레이어 생성
     var originalLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
-            format: new ol.format.GeoJSON(), // GeoJSON 형식 사용
-            url: 'http://localhost/geoserver/testhere/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=testhere%3Ael_bjd&maxFeatures=50&outputFormat=application%2Fjson' // 데이터 소스 경로 설정
+            format: new ol.format.KML(), 
+            url: 'http://localhost/geoserver/testhere/wms/kml?layers=testhere%3Ael_bjd' // 데이터 소스 경로 설정
         })
     });
- 
+ 	
+    map.addLayer(originalLayer);
+ 	
  // 2. 벡터 레이어로 변환
     var vectorLayer = new ol.layer.Vector({
         source: originalLayer.getSource(), // 기존 레이어의 소스를 새로운 벡터 레이어의 소스로 설정
         // 기타 벡터 레이어 설정
     });
+ 
+	  // 맵에 벡터 레이어 추가
+ 	map.addLayer(vectorLayer);
 
-    // 맵에 벡터 레이어 추가
-   // map.addLayer(vectorLayer);
 
 
-    // 데이터의 최소값과 최대값을 기반으로 등간격 계산
-
-     var dataValues = [];
-        
-     vectorLayer.getSource().forEachFeature(function(feature) {
-     	var value = feature.get('usage'); // 속성 값을 가져옵니다.
-        dataValues.push(value);
-     });
-
-      	var uniqueValues = []; // 중복 제거된 값들을 담을 배열
-      	for (var i = 0; i < dataValues.length; i++) {
-      		if (uniqueValues.indexOf(dataValues[i]) === -1) {
-        		uniqueValues.push(dataValues[i]);
-         	}
-      	} 
-       
-        //최대값, 최소값
-        var maxValue = Math.max.apply(null, uniqueValues);
-        var minValue = 0;
-        
-        var numIntervals = 7; // 등간격을 몇 등분할 것인지
-        var interval = (maxValue - minValue) / numIntervals;
-        
-        
-        //범례 색상
-        
-        var colors = ['#FFFFFF', "#FFE5E5", '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000'];
-        
-        // 범례 범주 생성
-		var legend = [];
-		for (var i = 0; i < numIntervals; i++) {
-	   		var rangeStart = minValue + interval * i;
-   			var rangeEnd = minValue + interval * (i + 1);
-    		var category = 'From ' + rangeStart + ' to ' + rangeEnd; // 범주를 나타내는 텍스트
-    		var color = colors[i];
-    
-    		legend.push({ category: category, color: color });
-		};
 	
+	
+/* 	$('#addOriginal').click(function(){
+		 map.addLayer(el_bjd);  
+	});
+	
+	$('#addVector').click(function(){
+		  // 맵에 벡터 레이어 추가
+	 	map.addLayer(vectorLayer);
+	}); */
+		
 	$("#addLegendToDOM").click(function(){
+	    // 데이터의 최소값과 최대값을 기반으로 등간격 계산
+
+	     var dataValues = [];
+	        
+	     vectorLayer.getSource().forEachFeature(function(feature) {
+	     	var value = parseFloat(feature.get('usage')); // 속성 값을 가져옵니다.
+	        dataValues.push(value);
+	     });
+
+	      	var uniqueValues = []; // 중복 제거된 값들을 담을 배열
+	      	
+	      	for (var i = 0; i < dataValues.length; i++) {
+	      		if (uniqueValues.indexOf(dataValues[i]) === -1) {
+	        		uniqueValues.push(dataValues[i]);
+	         	}
+	      	} 
+	       
+	        //최대값, 최소값
+	        var maxValue = Math.max.apply(null, uniqueValues);
+	        var minValue = Math.min.apply(null, uniqueValues);
+	      	console.log("최대값 : " + maxValue)
+	      	console.log("최소값 : " + minValue)
+	        
+	       
+	        
+	        var numIntervals = 7; // 등간격을 몇 등분할 것인지
+	        var interval = (maxValue - minValue) / numIntervals;
+	        
+	        
+	        //범례 색상
+	        
+	        var colors = ['#FFFFFF', "#FFE5E5", '#FFCCCC', '#FF9999', '#FF6666', '#FF3333', '#FF0000'];
+	        
+	        // 범례 범주 생성
+			var legend = [];
+			for (var i = 0; i < numIntervals; i++) {
+		   		var rangeStart = minValue + interval * i;
+	   			var rangeEnd = minValue + interval * (i + 1);
+	    		var category = 'From ' + rangeStart + ' to ' + rangeEnd; // 범주를 나타내는 텍스트
+	    		var color = colors[i];
+	    
+	    		legend.push({ category: category, color: color });
+			};
+			
 	    var legendContainer = document.getElementById('map'); // HTML에서 범례를 표시할 요소를 가져옵니다.
+	    
 	    legend.forEach(function(item) {
 	       var legendItem = document.createElement('div');
 	       legendItem.innerHTML = '<span style="background-color:' + item.color + ';"></span>' + item.category;
 	       legendContainer.appendChild(legendItem);
-		})
-	});
+		})		
+	}); 
 	
 })
 </script>
@@ -137,7 +157,7 @@ $(function(){
 </head>
 <body>
 <div>
-	<button type="button" id="addLegendToDOM()">등간격</button>
+	<button type="button" id="addLegendToDOM">등간격</button>
 </div>
 <div id="map" style="width: 1000px; height: 800px; left: 0px; top: 0px"></div>
 

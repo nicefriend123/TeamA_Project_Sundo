@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="carbonMap">
+	
+	<select id="sdList" resultType="Map">
+		select sd_cd, sd_nm
+		from tl_sd
+	</select>
+	
+	<select id="sggList" parameterType="String" resultType="Map">
+		select sgg_cd, sgg_nm 
+		from tl_sgg 
+		where sd_nm = #{test}
+	</select>
+	
+</mapper>

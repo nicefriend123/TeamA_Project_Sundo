@@ -13,14 +13,6 @@ public class MapDAO {
 	@Autowired
 	SqlSession sqlSession;
 	
-	public List<Map<String, Object>> sdList() {
 
-		return sqlSession.selectList("carbonMap.sdList");
-	}
-
-	public List<Map<String, Object>> sggList(String test) {
-		return sqlSession.selectList("carbonMap.sggList", test);
-	}
-	
 	
 }

@@ -15,14 +15,4 @@ public class MapService {
 	private MapDAO mapDAO;
 	
 	
-	public List<Map<String, Object>> sdList() {
-				
-		return mapDAO.sdList();
-	}
-
-
-	public List<Map<String, Object>> sggList(String test) {
-		return mapDAO.sggList(test);
-	}
-	
 }

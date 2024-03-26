@@ -120,7 +120,6 @@ $(function(){
 	        var minValue = Math.min.apply(null, uniqueValues);
 	      	console.log("최대값 : " + maxValue)
 	      	console.log("최소값 : " + minValue)
-	        
 	       
 	        
 	        var numIntervals = 7; // 등간격을 몇 등분할 것인지

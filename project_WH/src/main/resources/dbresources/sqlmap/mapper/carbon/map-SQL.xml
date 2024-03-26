@@ -1,16 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="carbonMap">
-	
+
 	<select id="sdList" resultType="Map">
 		select sd_cd, sd_nm
 		from tl_sd
 	</select>
-	
+
 	<select id="sggList" parameterType="String" resultType="Map">
-		select sgg_cd, sgg_nm 
-		from tl_sgg 
+		select
+		sgg_cd, sgg_nm
+		from tl_sgg
 		where sd_nm = #{test}
 	</select>
+
+	<select id="sggSelect" parameterType="String" resultType="Map">
+		SELECT
+		bjd_cd, bjd_nm, sgg_cd, sum(use_amount) as usage
+		FROM "TB_CARBON_A4"
+		WHERE sgg_cd = #{sggcd}
+		group by bjd_cd, bjd_nm, sgg_cd
+	</select>
+
+	<select id="bum" parameterType="String" resultType="Map">
+		SELECT
+		max(e.usage), min(e.usage), (max(e.usage) - min(e.usage))/ 5 as
+		interval
+		FROM (SELECT bjd_cd, bjd_nm, sgg_cd, sum(use_amount) as usage
+		FROM "TB_CARBON_A4"
+		WHERE sgg_cd = #{sggcd}
+		group by bjd_cd, bjd_nm, sgg_cd) e
+	</select>
+
+	<select id="sdView" parameterType="String" resultType="Map">
+		select
+		(select ST_XMax(geom) as xmax FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by xmax desc limit 1), 
+		(select ST_YMax(geom) as ymax FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by ymax desc limit 1), 
+		(select ST_XMin(geom) as xmin FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by xmin limit 1), 
+		(select ST_YMin(geom) as ymin FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by ymin limit 1) 
+		from tl_sd limit 1
+	</select>
 	
+	<select id="sggView" parameterType="String" resultType="Map">
+		select
+    	(select ST_XMax(geom) as xmax FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar order by xmax desc limit 1), 
+    	(select ST_YMax(geom) as ymax FROM tl_sgg WHERE  sgg_nm = #{sggName}::varchar order by ymax desc limit 1), 
+    	(select  ST_XMin(geom) as xmin FROM tl_sgg WHERE  sgg_nm = #{sggName}::varchar order by xmin  limit 1), 
+    	(select ST_YMin(geom) as ymin FROM tl_sgg WHERE  sgg_nm = #{sggName}::varchar order by ymin limit 1)
+		from tl_sgg limit 1
+	</select>
+
+	<insert id="fileUp" parameterType="Map">
+	 INSERT INTO "TB_CARBON_A4" (`use_date`, `btitle`, `sgg_cd`, `bjd_cd`, `use_amount`) 
+	 VALUES (#{}, #{}, #{}, #{}, #{});
+	</insert>
 </mapper>

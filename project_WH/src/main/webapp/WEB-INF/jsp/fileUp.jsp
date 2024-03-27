@@ -8,7 +8,7 @@
 <body>
 	<form action="fileUp.do" method="post" accept="multipart/form-data" enctype="multipart/form-data">
 		<input type="file" name="upFile">
-		<button>읽기</button>
+		<input type="submit" name="upLoad" value="제출">
 	</form>
 </body>
 </html>

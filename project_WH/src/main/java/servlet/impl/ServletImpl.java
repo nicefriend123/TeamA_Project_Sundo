@@ -6,10 +6,12 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.ognl.NumericTypes;
 import org.springframework.stereotype.Service;
 
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.psl.dataaccess.util.EgovMap;
+import servlet.dto.MapDTO;
 import servlet.service.ServletService;
 
 @Service("ServletService")
@@ -53,10 +55,21 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	public List<Map<String, Object>> sggList(String test) {
 		return dao.sggList(test);
 	}
+	
 
 	@Override
 	public void fileUp(List<Map<String, Object>> list) {
-		dao.fileUp(list);
+		//MapDTO dto = new MapDTO();
+		
+		for (int i = 0; i < list.size(); i++) {
+			//dto.setUse_date((String)list.get(i).get("use_date"));
+			//dto.setSgg_cd((String)list.get(i).get("sgg_cd"));
+			//dto.setBjd_cd((String)list.get(i).get("bjd_cd"));
+			//dto.setUse_amount((NumericTypes)list.get(i).get("use_amount"));
+			
+			dao.fileUp(list.get(i));
+		}
+
 	}
 	
 	

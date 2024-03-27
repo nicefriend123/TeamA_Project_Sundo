@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import egovframework.rte.psl.dataaccess.util.EgovMap;
+import servlet.dto.MapDTO;
 
 @Repository("ServletDAO")
 public class ServletDAO extends EgovComAbstractDAO {
@@ -44,8 +45,8 @@ public class ServletDAO extends EgovComAbstractDAO {
 		return selectList("carbonMap.sggList", test);
 	}
 
-	public Object fileUp(List<Map<String, Object>> list) {
-		return insert("carbonMap.fileUp", list);
+	public Object fileUp(Map<String, Object> map) {
+		return insert("carbonMap.fileUp", map);
 	}
 	
 

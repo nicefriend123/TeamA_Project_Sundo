@@ -5,18 +5,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>title</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js"
-	integrity="sha512-O7kHS9ooekX8EveiC94z9xSvD/4xt10Qigl6uEKvspYykdux3Ci5QNu5fwi4ca0ZkZI/oCgx5ja8RklWUEqzxQ=="
-	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol-debug.css"
-	integrity="sha512-hBSieZLd5rse9gdkfv4n0pDU4D04SxpqBtwDzRy/QiXRBhczDyfCTDTnHCada73ubNqiQv6BLgCRXHAJPUwC5w=="
-	crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-	integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js" integrity="sha512-O7kHS9ooekX8EveiC94z9xSvD/4xt10Qigl6uEKvspYykdux3Ci5QNu5fwi4ca0ZkZI/oCgx5ja8RklWUEqzxQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol-debug.css" integrity="sha512-hBSieZLd5rse9gdkfv4n0pDU4D04SxpqBtwDzRy/QiXRBhczDyfCTDTnHCada73ubNqiQv6BLgCRXHAJPUwC5w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link href="../resources/css/mapTest.css" rel="stylesheet">
 <script type="text/javascript">
 	
 $(function(){
@@ -33,7 +25,7 @@ $(function(){
 		
    	var olView = new ol.View({
        	center: ol.proj.transform([127.100616,37.402142], 'EPSG:4326', 'EPSG:3857'), //좌표계 변환
-       	zoom: 7     
+       	zoom: 6     
     });// 뷰 설정
     
     var map = new ol.Map({
@@ -55,7 +47,7 @@ $(function(){
      	    	map.removeLayer(wmsSd);
      	     		
               	var geom = result.at(-1);
-              	console.log(geom);
+              	//console.log(geom);
      	     		
               	map.getView().fit([geom.xmin, geom.ymin, geom.xmax, geom.ymax], {duration : 500});
      	     		
@@ -225,10 +217,13 @@ $(function(){
 
 	 	 
 </script>
+
 </head>
 <body>
-   <div class="container">
-      <div class="main">
+	<div class="container">
+		<div class="main">
+		</div>
+		<div class="menu">
          <div class="btncon">
             <select id="sdSelect">
                <option>시도 선택</option>
@@ -252,9 +247,11 @@ $(function(){
             <button class="interval">보기</button>
             <a href='/fileUp.do'>파일 업로드</a>
          </div>
-         <div class="map" id="map" style="width: 900px; height: 1000px;"></div>
-      </div>
-   </div>
+		</div>
+ 		<div class="main">
+        	<div class="map" id="map" style="width: 900px; height: 1000px;"></div>
+      	</div>
+	</div>
 </body>
 
 </html>

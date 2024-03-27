@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import servlet.dto.MapDTO;
+
 @Service
 public interface ServletService {
 	String addStringTest(String str) throws Exception;

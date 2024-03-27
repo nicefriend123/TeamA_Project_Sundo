@@ -16,16 +16,15 @@
 
 	<select id="sggSelect" parameterType="String" resultType="Map">
 		SELECT
-		bjd_cd, bjd_nm, sgg_cd, sum(use_amount) as usage
+		bjd_cd, sgg_cd, sum(use_amount) as usage
 		FROM "TB_CARBON_A4"
 		WHERE sgg_cd = #{sggcd}
-		group by bjd_cd, bjd_nm, sgg_cd
+		group by bjd_cd, sgg_cd
 	</select>
 
 	<select id="bum" parameterType="String" resultType="Map">
 		SELECT
-		max(e.usage), min(e.usage), (max(e.usage) - min(e.usage))/ 5 as
-		interval
+		max(e.usage), min(e.usage), (max(e.usage) - min(e.usage))/ 5 as interval
 		FROM (SELECT bjd_cd, bjd_nm, sgg_cd, sum(use_amount) as usage
 		FROM "TB_CARBON_A4"
 		WHERE sgg_cd = #{sggcd}
@@ -51,7 +50,7 @@
 	</select>
 
 	<insert id="fileUp" parameterType="Map">
-	 INSERT INTO "TB_CARBON_A4" (`use_date`, `btitle`, `sgg_cd`, `bjd_cd`, `use_amount`) 
-	 VALUES (#{}, #{}, #{}, #{}, #{});
+	 INSERT INTO "TB_CARBON_A4" (use_date, sgg_cd, bjd_cd, use_amount) 
+	 VALUES (#{use_date}, #{sgg_cd}, #{bjd_cd}, #{use_amount}::INTEGER)
 	</insert>
 </mapper>

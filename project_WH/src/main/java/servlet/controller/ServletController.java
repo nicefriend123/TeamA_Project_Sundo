@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import servlet.dto.MapDTO;
 import servlet.service.MapService;
 import servlet.service.ServletService;
 import servlet.util.Util;
@@ -73,7 +74,7 @@ public class ServletController {
 		List<Map<String, Object>> sgglist = servletService.sggList(test);		
 		Map<String, Object> sdView = servletService.sdView(test);
 		sgglist.add(sdView);
-		System.out.println(sgglist);
+		//System.out.println(sgglist);
 		
 		return sgglist;
 	}
@@ -167,20 +168,20 @@ public class ServletController {
 		System.out.println(upFile.getSize());
 		
 		List<Map<String, Object>> list = new ArrayList<>();
-		Map<String,	Object>	m;
-		
+		Map<String, Object> m;
 		InputStreamReader isr =	new InputStreamReader(upFile.getInputStream());
 		BufferedReader br = new BufferedReader(isr);
 		String line = null;
+
 		
 		while ((line =	br.readLine()) != null)	{
-			m =	new HashMap<>();
+			m = new HashMap<String, Object>();
 			String[] lineArr = line.split("\\|");
-			m.put("use_date", lineArr[0]);	//사용_년월	date
-			m.put("addr", lineArr[1]);	//대지_위치	addr
-			//m.put("newAddr", lineArr[2]);	//도로명_대지_위치	newAddr
-			m.put("sgg_cd", lineArr[3]);	//시군구_코드	sigungu
-			m.put("bjd_cd", lineArr[4]);	//법정동_코드	bubjungdong
+			m.put("use_date", lineArr[0]); //사용_년월	date
+			//m.put("addr", lineArr[1]); //대지_위치	addr
+			//m.put("newAddr", lineArr[2]); //도로명_대지_위치	newAddr
+			m.put("sgg_cd", lineArr[3]); //시군구_코드	sigungu
+			m.put("bjd_cd", lineArr[4]); //법정동_코드	bubjungdong
 			//m.put("addrCode", lineArr[5]);	//대지_구분_코드	addrCode
 			//m.put("bun", lineArr[6]);	//번	bun
 			//m.put("si",	lineArr[7]);	//지	si
@@ -189,16 +190,17 @@ public class ServletController {
 			//m.put("newAddrUnder", lineArr[10]);//새주소_지상지하_코드newAddrUnder
 			//m.put("newAddrBun",	lineArr[11]);	//새주소_본_번	newAddrBun
 			//m.put("newAddrBun2", lineArr[12]);	//새주소_부_번	newAddrBun2
-			m.put("use_amount",	lineArr[13]);	//사용_량(KWh)	usekwh
+			m.put("use_amount", lineArr[13]);	//사용_량(KWh)	usekwh
 			list.add(m);
+
 		}
 		
-//		for (int i = 0; i < 20; i++) {
-//			System.out.println(list.get(i));
-//		}
-		
+/*		for (int i = 0; i < 10; i++) {
+			System.out.println(list.get(i));
+		}
+*/
 		servletService.fileUp(list);
-		
+				
 		br.close();
 		isr.close();
 		

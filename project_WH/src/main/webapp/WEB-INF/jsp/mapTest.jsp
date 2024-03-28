@@ -153,7 +153,7 @@ $(function(){
  
 	$(".interval").click(function(){
   		if ($("#legendSelect").val() == "equalInterval") {
-			//map.removeLayer(wmsSd);   
+			map.removeLayer(wmsSd);   
   	       	var sggcode = $("#sggSelect").val();
   	      	var bjdcode;
   	        	        
@@ -207,11 +207,51 @@ $(function(){
   	        	 }
   	        })
 			
-  	    } else {
-			alert("ho");
+  	    } else if($("#legendSelect").val() == "jenkins"){
+			
 		}
   	        
   	});
+ 
+ 
+	//맵 클릭 이벤트
+	map.on('singleclick', function(evt) {
+	    var coordinate = evt.coordinate;
+	    var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+	    
+	    // 툴팁 DIV 생성
+	    let element = document.createElement("div");
+	    element.classList.add('ol-popup');
+	    element.innerHTML = `<a id="popup-closer" class="ol-popup-closer"></a> <div><p>You clicked here:</p><code>${hdms}</code></div>`;
+	    element.style.display = 'block';
+
+		// OverLay 생성
+	    let overlay = new ol.Overlay({
+	        element: element, // 생성한 DIV
+	        autoPan: true,
+	        className: "multiPopup",
+	        autoPanMargin: 100,
+	        autoPanAnimation: {
+	            duration: 400
+	        }
+	    });
+		//오버레이의 위치 저장
+	    overlay.setPosition(coordinate);
+	    //지도에 추가
+	    map.addOverlay(overlay);
+
+		// 해당 DIV 다켓방법
+	    let oElem = overlay.getElement();
+	    oElem.addEventListener('click', function(e) {
+	        var target = e.target;
+	        if (target.className == "ol-popup-closer") {
+	            //선택한 OverLayer 삭제
+	            map.removeOverlay(overlay);
+
+	        }
+	    });
+	});
+ 
   
 })   
 
@@ -221,31 +261,34 @@ $(function(){
 </head>
 <body>
 	<div class="container">
-		<div class="main">
-		</div>
 		<div class="menu">
          <div class="btncon">
+         	<div class="selectBox">
             <select id="sdSelect">
                <option>시도 선택</option>
                <c:forEach items="${sdlist }" var="sd">
                   <option class="sd" value="${sd.sd_cd }">${sd.sd_nm}</option>
                </c:forEach>
             </select> 
+         	</div>
             
+         	<div class="selectBox">
             <select id="sggSelect">
                <option>시군구 선택</option>
             </select> 
-            
-            <button class="insertbtn">이동</button>
-
+         	</div>
+         	<div class="selectBox">
             <select name="legend" id="legendSelect">
                <option>범례 선택</option>
                <option class="legend" value="jenkins">NaturalBreaks</option>
                <option class="legend" value="equalInterval">등간격</option>
             </select>
+         	</div>
 
             <button class="interval">보기</button>
-            <a href='/fileUp.do'>파일 업로드</a>
+            <div id="fileUp">
+	            <a href='/fileUp.do'>파일 업로드</a>
+            </div>
          </div>
 		</div>
  		<div class="main">

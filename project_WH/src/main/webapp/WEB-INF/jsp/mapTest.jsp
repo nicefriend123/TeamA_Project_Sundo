@@ -213,8 +213,8 @@ $(function(){
   	        
   	});
  
- 
-	//맵 클릭 이벤트
+ /* 
+ 	//맵 클릭 이벤트
 	map.on('singleclick', function(evt) {
 	    var coordinate = evt.coordinate;
 	    var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
@@ -251,10 +251,14 @@ $(function(){
 	        }
 	    });
 	});
- 
+  */
+
+  
+  
+  
+  
   
 })   
-
 	 	 
 </script>
 
@@ -284,17 +288,31 @@ $(function(){
                <option class="legend" value="equalInterval">등간격</option>
             </select>
          	</div>
-
             <button class="interval">보기</button>
+
             <div id="fileUp">
 	            <a href='/fileUp.do'>파일 업로드</a>
             </div>
          </div>
+         <div>
+	        <button id="modalOpenButton">모달창 열기</button>
+		</div>	
 		</div>
  		<div class="main">
-        	<div class="map" id="map" style="width: 900px; height: 1000px;"></div>
+        	<div class="map" id="map" style="width: 1200px; height: 800px;"></div>
       	</div>
 	</div>
-</body>
+	
 
+
+<div id="modalContainer" class="hidden">
+	<div id="modalContent">
+		<p>모달 창 입니다.</p>
+		<button id="modalCloseButton">닫기</button>
+	</div>
+</div>
+
+
+	
+</body>
 </html>

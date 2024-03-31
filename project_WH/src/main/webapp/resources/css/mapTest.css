@@ -16,7 +16,7 @@
 	heigth: 100vh;
 	margin: auto;
 }
-
+ 
 #map{
 	z-index: 20;
 }
@@ -48,4 +48,16 @@
 
 #modalContainer.hidden {
   display: none;
+}
+
+.nav-link select {
+    display: block; /* Make the select element a block element */
+    margin-bottom: 5px; /* Adjust as needed */
+}
+
+.sb-nav-link-icon{
+	display: flex;
+}
+.fileUpLoad{
+	display: block;
 }

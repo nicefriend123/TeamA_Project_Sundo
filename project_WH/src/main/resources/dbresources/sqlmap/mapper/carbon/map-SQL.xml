@@ -53,4 +53,16 @@
 	 INSERT INTO "TB_CARBON_A4" (use_date, sgg_cd, bjd_cd, use_amount) 
 	 VALUES (#{use_date}, #{sgg_cd}, #{bjd_cd}, #{use_amount}::INTEGER)
 	</insert>
+	
+	<select id="point" parameterType="Map" resultType="Map">
+		<![CDATA[
+		select sgg_cd, sgg_nm 
+		from (select ST_XMax(geom) as xmax, ST_XMin(geom) as xmin, 
+					ST_YMax(geom) as ymax, ST_YMin(geom) as ymin, sgg_cd, sgg_nm 
+				from tl_sgg 
+				group by sgg_cd, sgg_nm, tl_sgg.geom) point
+		where (point.xmax > #{xvalue} and point.xmin < #{xvalue}) and (point.ymax > #{yvalue} and point.ymin < #{yvalue})
+		]]>
+	</select>
+	
 </mapper>

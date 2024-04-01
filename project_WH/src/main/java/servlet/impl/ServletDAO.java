@@ -48,6 +48,11 @@ public class ServletDAO extends EgovComAbstractDAO {
 	public Object fileUp(Map<String, Object> map) {
 		return insert("carbonMap.fileUp", map);
 	}
+
+	public Map<String, Object> getCoordinate(Map<String, Object> coor) {
+		return selectOne("carbonMap.point", coor);
+		
+	}
 	
 
 }

@@ -25,4 +25,6 @@ public interface ServletService {
 	List<Map<String, Object>> sggList(String test);
 
 	void fileUp(List<Map<String, Object>> list);
+
+	Map<String, Object> getCoordinate(Map<String, Object> coor);
 }

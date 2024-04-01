@@ -71,6 +71,11 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 		}
 
 	}
+
+	@Override
+	public Map<String, Object> getCoordinate(Map<String, Object> coor) {
+		return dao.getCoordinate(coor);		
+	}
 	
 	
 }

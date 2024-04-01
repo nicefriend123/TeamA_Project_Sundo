@@ -3,6 +3,7 @@ package servlet.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -11,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.style.ValueStyler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springmodules.validation.bean.context.web.ValidationContextUrlMappingArrayPropertyEditor;
 
 import servlet.dto.MapDTO;
 import servlet.service.MapService;
@@ -207,6 +211,21 @@ public class ServletController {
 		return "redirect:/fileUp";
 	}
 	
+	@PostMapping("/getCoordinate.do")
+	public @ResponseBody Map<String, Object> getCoordinate(HttpServletRequest request) {
+		String[] coord = request.getParameterValues("coordinate");
+		//System.out.println(coord[0]);
+		//System.out.println(coord[1]);
+		
+		Map<String, Object> coor = new HashMap<String, Object>();
+		coor.put("xvalue", Double.parseDouble(coord[0]));
+		coor.put("yvalue", Double.parseDouble(coord[1]));
+		
+		Map<String, Object> sggCd = servletService.getCoordinate(coor);
+		sggCd.get("sgg_cd");
+		sggCd.get("sgg_nm");
+		return sggCd;
+	}
 	
 	
 }

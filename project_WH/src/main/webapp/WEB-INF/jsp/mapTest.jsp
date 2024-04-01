@@ -34,7 +34,7 @@ $(function(){
 		
    	var olView = new ol.View({
        	center: ol.proj.transform([127.100616,37.402142], 'EPSG:4326', 'EPSG:3857'), //좌표계 변환
-       	zoom: 6     
+       	zoom: 7     
     });// 뷰 설정
     
     var map = new ol.Map({
@@ -99,6 +99,7 @@ $(function(){
     $("#sggSelect").on("change", function(){
     	//var sdName = $("#sdSelect").val();
     	var sggName = $("#sggSelect option:checked").text();
+    	var sd_CQL = "sgg_cd="+$("#sggSelect").val();
     	
     	$.ajax({
         	url : "/sggSelect.do",
@@ -107,11 +108,78 @@ $(function(){
    	        data : {"sggName" : sggName},
      	    success : function(result) {
               	map.getView().fit([result.xmin, result.ymin, result.xmax, result.ymax], {duration : 500});
+              	
+              	map.removeLayer(wmsSd);
+              	
+              	wmsSgg = new ol.layer.Tile({
+    	  	       	source : new ol.source.TileWMS({
+    	  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+    	  	        	params : {
+    	  	          		'VERSION' : '1.1.0', // 2. 버전
+    	  	          		'LAYERS' : 'testhere:tl_sgg', // 3. 작업공간:레이어 명
+    	  	          		'CQL_FILTER' : sd_CQL,
+    	  	          		'STYLES' : 'carbon2',
+    	  	          		'BBOX' : [1.386872E7, 3906626.5, 1.4428071E7, 4670269.5], 
+    	  	          		'SRS' : 'EPSG:3857', // SRID
+    	  	          		'FORMAT' : 'image/png' // 포맷
+    	  	        	},
+    	  	        	serverType : 'geoserver',
+    	  	    	}),
+    	  	    	properties:{name:'wms'}
+				}); 
+    	          
+    	  	    map.addLayer(wmsSgg);
+    	  	    
+             	//맵 클릭 이벤트
+    	  		map.on('singleclick', async (evt) => {
+    	  			
+    	  			const wmsLayer = map.getLayers().getArray().filter(layer => layer.get('name') === 'wms')[0];
+    	  			
+    	  			const source = wmsLayer.getSource();
+    	  			
+    	  			const url = source.getFeatureInfoUrl(evt.coordinate, map.getView().getResolution(), 'EPSG:3857', {
+    	  				QUERY_LAYERS: 'testhere:tl_sgg',
+    	  				INFO_FORMAT: 'application/json'
+    	  			});
+    	  			
+    	  			// GetFeatureInfo URL이 유효할 경우
+    	  			if (url) {
+    	  				const request = await fetch(url.toString(), { method: 'GET' }).catch(e => alert(e.message));
+    	  				// 응답이 유효할 경우
+    	  				if (request) {
+    	  					// 응답이 정상일 경우
+    	  					if (request.ok) {
+    	  						const json = await request.json();
+
+    	  						// 객체가 하나도 없을 경우
+    	  						if (json.features.length === 0) {
+    	  							overlay.setPosition(undefined);
+    	  						} else { //객체가 있을 경우
+    	  							//ceojson에서 feature 생성
+    	  							const feature = new GeoJSON().readFeature(json.features[0]);
+    	  							
+    	  							//생성한 feature로 vectorsource 생성
+    	  							const vector = new VectorSource({features : [feature]});
+    	  							
+    	  							setPopupState(
+    	  								'<div><li>' + feature.get('sgg_nm') + '</li><li>' + feature.get('sgg_cd') + '</li></div>'
+    	  							);
+    	  							
+    	  							overlay.setPosition(getCenter(vector.getExtent()));
+    	  						}
+    	  					} else { //아닐 경우
+    	  						 alert(request.status);
+    	  					}
+    	  				}
+    	  			}
+    	  		});	
            	},
            	error : function() {
               	alert("실패");
            	}
         })
+        
+
     	
     });
     
@@ -163,6 +231,7 @@ $(function(){
 	$(".interval").click(function(){
   		if ($("#legendSelect").val() == "equalInterval") {
 			map.removeLayer(wmsSd);   
+			map.removeLayer(wmsSgg);   
   	       	var sggcode = $("#sggSelect").val();
   	      	var bjdcode;
   	        	        
@@ -221,49 +290,105 @@ $(function(){
 		}
   	        
   	});
- 
- /* 
- 	//맵 클릭 이벤트
-	map.on('singleclick', function(evt) {
-	    var coordinate = evt.coordinate;
-	    var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+ 	
+
+	
+
+
+		
+/* 	    var coordinate = evt.coordinate;
+	    console.log(coordinate);
+	    var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:4326', 'EPSG:3857'));
+	    console.log(hdms); */
 	    
-	    // 툴팁 DIV 생성
-	    let element = document.createElement("div");
-	    element.classList.add('ol-popup');
-	    element.innerHTML = `<a id="popup-closer" class="ol-popup-closer"></a> <div><p>You clicked here:</p><code>${hdms}</code></div>`;
-	    element.style.display = 'block';
+/* 	    $.ajax({
+	    	url : "/getCoordinate.do",
+	        type : "post",
+	        dataType : "json",
+	        traditional : true,
+	        data : {"coordinate" : coordinate},
+	        success : function(result){
+	        	console.log(result);
+	        	let addr = result.sgg_nm;
+		    	// 툴팁 DIV 생성
+		    	let element = document.createElement("div");
+	    		element.classList.add('ol-popup');
+	    		element.innerHTML = '<a id="popup-closer" class="ol-popup-closer"></a><div><p>You clicked here:' + addr + '</p></div>';
+	    		element.style.display = 'block';
+	    		// OverLay 생성
+	    	    let overlay = new ol.Overlay({
+	    	        element: element, // 생성한 DIV
+	    	        autoPan: true,
+	    	        className: "multiPopup",
+	    	        autoPanMargin: 100,
+	    	        autoPanAnimation: {
+	    	            duration: 400
+	    	        }
+	    	    });
+	    		//오버레이의 위치 저장
+	    	    overlay.setPosition(coordinate);
+	    	    //지도에 추가
+	    	    map.addOverlay(overlay);
 
-		// OverLay 생성
-	    let overlay = new ol.Overlay({
-	        element: element, // 생성한 DIV
-	        autoPan: true,
-	        className: "multiPopup",
-	        autoPanMargin: 100,
-	        autoPanAnimation: {
-	            duration: 400
+	    		// 해당 DIV 타겟방법
+	    	    let oElem = overlay.getElement();
+	    	    oElem.addEventListener('click', function(e) {
+	    	        var target = e.target;
+	    	        if (target.className == "ol-popup-closer") {
+	    	            //선택한 OverLayer 삭제
+	    	            map.removeOverlay(overlay);
+
+	    	        }
+	    	    });
+	        },
+	        error : function(){
+	        	
 	        }
-	    });
-		//오버레이의 위치 저장
-	    overlay.setPosition(coordinate);
-	    //지도에 추가
-	    map.addOverlay(overlay);
+	    }) */
+	
+  	
+ 	//파일 업로드
+	$("#submitBtn").click(function(){
+		
+		var formData = new FormData();
+		var inputFile = $("input[name='upFile']");
+		var files = inputFile[0].files;
+		//console.log(files);
+		
+		for(var i =0; i<files.length; i++){
+			
+			formData.append("upFile", files[i]);
+		}
+		
+		//txt인지 체크
+		
+		//업로드
+ 		$.ajax({
+			url : "fileUp.do",
+			type : "post",
+			async: true,
+			accept : "multipart/form-data",
+			enctype : "multipart/form-data",
+			processData : false,
+			contentType : false,
+			dataType : "text",
+			data : formData,
+	        beforeSend: function(){
+	        	showToast("전송중..");
+	        },
+			success : function(result){
+				showToast("완료!");
+	
+			},
+			error : function(){
+				showToast("통신 실패");
+				
+			}
+		}).done(function(data) {
 
-		// 해당 DIV 다켓방법
-	    let oElem = overlay.getElement();
-	    oElem.addEventListener('click', function(e) {
-	        var target = e.target;
-	        if (target.className == "ol-popup-closer") {
-	            //선택한 OverLayer 삭제
-	            map.removeOverlay(overlay);
-
-	        }
-	    });
+        })
+		
 	});
-  */
-
-  
-  
   
   
   
@@ -273,214 +398,87 @@ $(function(){
 
 </head>
 <body class="sb-nav-fixed">
-	<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-      <!-- Navbar Brand-->
-      <a class="navbar-brand ps-3" href="index.html">탄소배출지도</a>
-      <!-- Sidebar Toggle-->
-      <button
-        class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
-        id="sidebarToggle"
-        href="#!"
-      >
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+	<!-- Navbar Brand-->
+    <a class="navbar-brand ps-3" href="index.html">탄소배출지도</a>
+    <!-- Sidebar Toggle-->
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
         <i class="fas fa-bars"></i>
-      </button>
-      <!-- Navbar Search-->
-      <form
-        class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"
-      >
+	</button>
+    <!-- Navbar Search-->
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
-          <input
-            class="form-control"
-            type="text"
-            placeholder="Search for..."
-            aria-label="Search for..."
-            aria-describedby="btnNavbarSearch"
-          />
+          <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch"/>
           <button class="btn btn-primary" id="btnNavbarSearch" type="button">
             <i class="fas fa-search"></i>
           </button>
         </div>
-      </form>
-      <!-- Navbar-->
-      <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle"
-            id="navbarDropdown"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            ><i class="fas fa-user fa-fw"></i
-          ></a>
-          <ul
-            class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="navbarDropdown"
-          >
-            <li><a class="dropdown-item" href="#!">Settings</a></li>
-            <li><a class="dropdown-item" href="#!">Activity Log</a></li>
-            <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#!">Logout</a></li>
-          </ul>
+	</form>
+    <!-- Navbar-->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+    	<li class="nav-item dropdown">
+        	<a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        		<i class="fas fa-user fa-fw"></i>
+        	</a>
+          	<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            	<li><a class="dropdown-item" href="#!">Settings</a></li>
+            	<li><a class="dropdown-item" href="#!">Activity Log</a></li>
+            	<li><hr class="dropdown-divider" /></li>
+            	<li><a class="dropdown-item" href="#!">Logout</a></li>
+          	</ul>
         </li>
-      </ul>
-    </nav>
-    <div id="layoutSidenav">
-      <div id="layoutSidenav_nav">
-        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-          <div class="sb-sidenav-menu">
-            <div class="nav">
-              <div class="sb-sidenav-menu-heading">지도 보기</div>
-              <a
-                class="nav-link collapsed"
-                href="maptest.do"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseLayouts"
-                aria-expanded="false"
-                aria-controls="collapseLayouts"
-              >
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-tachometer-alt"></i>
-                </div>
-                탄소배출지도
-                <div class="sb-sidenav-collapse-arrow">
-                  <i class="fas fa-angle-down"></i>
-                </div>
-              </a>
-              <div
-                class="collapse"
-                id="collapseLayouts"
-                aria-labelledby="headingOne"
-                data-bs-parent="#sidenavAccordion"
-              >
-                <nav class="sb-sidenav-menu-nested nav">
-                  <a class="nav-link">            
-            		<select id="sdSelect" class="form-select">
-               		<option>시도 선택</option>
-               		<c:forEach items="${sdlist }" var="sd">
-                  		<option class="sd" value="${sd.sd_cd }">${sd.sd_nm}</option>
-               		</c:forEach>
-            		</select>
-            		<select id="sggSelect" class="form-select">
-               			<option>시군구 선택</option>
-            		</select>
-            		<select name="legend" id="legendSelect" class="form-select">
-               			<option>범례 선택</option>
-               			<option class="legend" value="jenkins">NaturalBreaks</option>
-               			<option class="legend" value="equalInterval">등간격</option>
-            		</select>
-            		<div class="selectBox"> 
-	            		<button class="interval">보기</button>
-         			</div>
-            		</div>
-         		  </a>
-
-              <a
-                class="nav-link collapsed"
-                href="index.html"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseFileUp"
-                aria-expanded="false"
-                aria-controls="collapseFileUp"
-              >
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-tachometer-alt"></i>
-                </div>
-                파일 업로드
-                <div class="sb-sidenav-collapse-arrow">
-                  <i class="fas fa-angle-down"></i>
-                </div>
-              </a>
-              <div
-                class="collapse"
-                id="collapseFileUp"
-                aria-labelledby="headingOne"
-                data-bs-parent="#sidenavAccordion"
-              >
-                <nav class="sb-sidenav-menu-nested nav">
-                  <a class="nav-link fileUpLoad">
-					<input type="file" id="upFile" name="upFile">
-					<button type="button" id="submitBtn">업로드</button>
-                  </a>
-                </nav>
-              </div>
-              <div class="sb-sidenav-menu-heading">통계</div>
-              <a class="nav-link">
-                <div class="sb-nav-link-icon">
-                  <i class="fas fa-chart-area"></i>
-                </div>
-                Charts
-              </a>
-            </div>
-            </div>
-          </nav>
-          </div>
-          <div class="sb-sidenav-footer">
-            <div class="small">Logged in as:</div>
-            Start Bootstrap
-          </div>
-        </nav>
-      </div>
+	</ul>
+</nav>
+<div id="layoutSidenav">
+	<div id="layoutSidenav_nav">
+		<!-- Sidebar -->
+		<%@ include file="./menu.jsp" %>
+	</div>
 	<div id="layoutSidenav_content">
         <main>
-			<div class="main">
-        		<div class="map" id="map" style="width: 1200px; height: 800px;"></div>
+			<div class="map_content">
+        		<div class="map" id="map" style="width: 1150px; height: 800px;"></div>
       		</div>
+			<div id="toastBox"></div>
+			<div id="map-popup"></div>
         </main>
         <footer class="py-4 bg-light mt-auto">
-          <div class="container-fluid px-4">
-            <div class="d-flex align-items-center justify-content-between small">
-              <div class="text-muted">Copyright &copy; Your Website 2023</div>
-              <div>
-                <a href="#">Privacy Policy</a>
-                &middot;
-                <a href="#">Terms &amp; Conditions</a>
-              </div>
-            </div>
-          </div>
+        	<div class="container-fluid px-4">
+            	<div class="d-flex align-items-center justify-content-between small">
+            	</div>
+          	</div>
         </footer>
-      </div>
-    </div>
-	<div class="container">
-		<div class="menu">
-         <div class="btncon">
-
-
-            <div id="fileUp">
-	            <a href='/fileUp.do'>파일 업로드</a>
-            </div>
-         </div>
-         <div>
-	        <button id="modalOpenButton">모달창 열기</button>
-		</div>	
-		</div>
-
-	</div>
-	
-
-
-<div id="modalContainer" class="hidden">
-	<div id="modalContent">
-		<p>모달 창 입니다.</p>
-		<button id="modalCloseButton">닫기</button>
 	</div>
 </div>
-<div id="upLoadingModalContainer" class="modal">
-	<div id="upLoadingModal" class="modalContent">
-		<p>모달 창 1입니다.</p>
-	</div>
-</div>
-<div id="finishedModalContainer" class="modal">
-	<div id="finishedModal" class="modalContent">
-		<p>모달 창2 입니다.</p>
-	</div>
-</div>
+
+
+
+<script type="text/javascript">
+
+function showToast(message) {
+	let toast = document.getElementById('toastBox');
+	toast.innerText= message;
+	toast.style.display = 'block';
+    setTimeout(function() {
+        toast.style.display = 'none';
+    }, 5000); // 3초
+}
+
+/* const popup = document.getElementById('map-popup');
+const overlay = new Overlay({
+	id: 'popup',
+	element: popup || undefined,
+	positioning: 'center-center',
+	autoPan: {
+		animation: {
+			duration: 250
+		}
+	}
+}); */
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="js/scripts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-<script src="assets/demo/chart-area-demo.js"></script>
-<script src="assets/demo/chart-bar-demo.js"></script>
+<script src="../resources/js/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-<script src="js/datatables-simple-demo.js"></script>
+<script src="../resources/js/datatables-simple-demo.js"></script>
 </body>
 </html>

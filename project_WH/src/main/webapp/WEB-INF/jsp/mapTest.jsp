@@ -253,10 +253,11 @@ $(function(){
 	map.on('singleclick', async (evt) => {
 		
 		let container = document.createElement('div');
-	    container.classList.add('ol-popup-custom');
+	    container.setAttribute("class", "ol-popup-custom");
 	    
 	    let content = document.createElement('div');
-	    content.classList.add('popup-content');
+	    content.setAttribute("class", "popup-content");
+	    //content.classList.add('popup-content');
 	    
 	    container.appendChild(content);
 	    document.body.appendChild(container);
@@ -312,21 +313,17 @@ $(function(){
 						const vector = new ol.source.Vector({ features: [ feature ] });
 						console.log(vector)
 						
-					    content.innerHTML = '<ul><span>' + feature.get('sgg_cd') + 'kwt' +
-					    					'</span></ul>';
+					    content.innerHTML = '<div class="info">' + feature.get('sgg_nm') +
+					    					'</div><div class="info">' + feature.get('sgg_cd') + ' kwt' +
+					    					'</div>';
 					    
 					    var overlay = new ol.Overlay({
 					        element: container,
-					        //autoPan: true,
-					        //autoPanAnimation: {
-					        //  duration: 250
-					        //}
 					      });
 						
 					    map.addOverlay(overlay);
 					    overlay.setPosition(coordinate);
 
-						//overlay.setPosition(getCenter(vector.getExtent()));
 					}
 				}
 
@@ -342,55 +339,6 @@ $(function(){
 	
 
 		
-/* 	    var coordinate = evt.coordinate;
-	    console.log(coordinate);
-	    var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:4326', 'EPSG:3857'));
-	    console.log(hdms); */
-	    
-/* 	    $.ajax({
-	    	url : "/getCoordinate.do",
-	        type : "post",
-	        dataType : "json",
-	        traditional : true,
-	        data : {"coordinate" : coordinate},
-	        success : function(result){
-	        	console.log(result);
-	        	let addr = result.sgg_nm;
-		    	// 툴팁 DIV 생성
-		    	let element = document.createElement("div");
-	    		element.classList.add('ol-popup');
-	    		element.innerHTML = '<a id="popup-closer" class="ol-popup-closer"></a><div><p>You clicked here:' + addr + '</p></div>';
-	    		element.style.display = 'block';
-	    		// OverLay 생성
-	    	    let overlay = new ol.Overlay({
-	    	        element: element, // 생성한 DIV
-	    	        autoPan: true,
-	    	        className: "multiPopup",
-	    	        autoPanMargin: 100,
-	    	        autoPanAnimation: {
-	    	            duration: 400
-	    	        }
-	    	    });
-	    		//오버레이의 위치 저장
-	    	    overlay.setPosition(coordinate);
-	    	    //지도에 추가
-	    	    map.addOverlay(overlay);
-
-	    		// 해당 DIV 타겟방법
-	    	    let oElem = overlay.getElement();
-	    	    oElem.addEventListener('click', function(e) {
-	    	        var target = e.target;
-	    	        if (target.className == "ol-popup-closer") {
-	    	            //선택한 OverLayer 삭제
-	    	            map.removeOverlay(overlay);
-
-	    	        }
-	    	    });
-	        },
-	        error : function(){
-	        	
-	        }
-	    }) */
 	
   	
  	//파일 업로드
@@ -442,40 +390,6 @@ $(function(){
 	 	 
 </script>
 <style type="text/css">
-/* .ol-popup-custom {
-    padding: 0;
-    margin: 0;
-    pointer-events: none;
-    position: absolute;
-    background-color: white;
-    filter: drop-shadow(3px 3px 7px rgba(0,0,0,0.6));
-    border: 1px solid black;
-    width: 100px;
-    left: -50px; 
-    height: 30px;
-    bottom: -15px; 
-    box-sizing: border-box;
-    overflow: hidden;
-}
-.popup-content {
-   position: absolute;
-   box-sizing: border-box;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   line-height: 100%;
-}
-.popup-content > span {
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-    width: 100%; 
-    height: 100%; 
-    font-size:9px;
-    font-weight: bold;
-    box-sizing: border-box;
-   text-align: center; 
-} */
 .ol-popup-custom {
     padding: 0;
     margin: 0;
@@ -484,34 +398,32 @@ $(function(){
     background-color: white;
     filter: drop-shadow(3px 3px 7px rgba(0,0,0,0.6));
     border: 1px solid black;
-    width: 100px;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    min-width: 120px;
+    width: auto;
+    left: -60px; /* 위치를 조정, -width의 절반값 */
+    min-height: 48px;
+    height: auto;
+    bottom: -50%; /* 위치를 조정, -height의 절반값 */
     box-sizing: border-box;
+    text-align: center;
     overflow: hidden;
 }
-
 .popup-content {
-   position: absolute;
-   box-sizing: border-box;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   width: 100%; /* 부모 요소에 맞추기 위해 */
-   height: 100%; /* 부모 요소에 맞추기 위해 */
+	display : block;
+   	position: absolute;
+   	width: 100%;
+   	box-sizing: border-box;
+   	line-height: 100%;
 }
-
-.popup-content > span {
-    display: flex;
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    width: 100%; /* 부모 요소에 맞추기 위해 */
-    height: 100%; /* 부모 요소에 맞추기 위해 */
-    font-size: 9px;
+.info {
+    display: inline-block;
+    line-height: 100%;
+    width: 100%;
+   	height:auto;
+    font-size:10px;
     font-weight: bold;
     box-sizing: border-box;
-    text-align: center; /* 텍스트를 가운데로 정렬 */
+    justify-content: center;
 }
 
 </style>

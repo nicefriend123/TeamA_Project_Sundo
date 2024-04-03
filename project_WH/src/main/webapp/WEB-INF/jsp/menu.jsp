@@ -3,10 +3,9 @@
 	<div class="sb-sidenav-menu">
 		<div class="nav">
 			<div class="sb-sidenav-menu-heading">지도 보기</div>
-			<a class="nav-link collapsed" href="maptest.do" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-				<div class="sb-nav-link-icon">
-					<i class="fas fa-tachometer-alt"></i>
-				</div> 탄소배출지도
+			<a id="mapPage" class="nav-link collapsed[href='maptest.do']" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+				<i class="fas fa-tachometer-alt"></i>
+				 탄소배출지도
 				<div class="sb-sidenav-collapse-arrow">
 					<i class="fas fa-angle-down"></i>
 				</div>
@@ -35,9 +34,8 @@
 				</nav>
 			</div>
 			<a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseFileUp" aria-expanded="false" aria-controls="collapseFileUp">
-				<div class="sb-nav-link-icon">
-					<i class="fas fa-tachometer-alt"></i>
-				</div> 파일 업로드
+				<i class="fas fa-tachometer-alt"></i>
+				파일 업로드
 				<div class="sb-sidenav-collapse-arrow">
 					<i class="fas fa-angle-down"></i>
 				</div>
@@ -51,10 +49,9 @@
 				</nav>
 			</div>
 			<div class="sb-sidenav-menu-heading">통계</div>
-			<a class="nav-link">
-				<div class="sb-nav-link-icon">
-					<i class="fas fa-chart-area"></i>
-				</div> Charts
+			<a class="nav-link" href="chart.do">
+				<i class="fas fa-chart-area"></i>
+				Charts
 			</a>
 		</div>
 	</div>

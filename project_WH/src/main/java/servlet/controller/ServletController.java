@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springmodules.validation.bean.context.web.ValidationContextUrlMappingArrayPropertyEditor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import servlet.dto.MapDTO;
 import servlet.service.MapService;
 import servlet.service.ServletService;
@@ -227,5 +230,26 @@ public class ServletController {
 		return sggCd;
 	}
 	
+	@GetMapping("/chart.do")
+	public String chart (Model model) {
+		List<Map<String, Object>> totalChart = servletService.totalChart();
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			
+			String jsonChart = mapper.writeValueAsString(totalChart);
+			System.out.println(jsonChart);
+
+			jsonChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(totalChart);
+			System.out.println(jsonChart);
+			model.addAttribute("jsonChart", jsonChart);
+			
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}		
+		
+		return "chart";
+	}
 	
 }

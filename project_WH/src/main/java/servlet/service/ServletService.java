@@ -27,4 +27,6 @@ public interface ServletService {
 	void fileUp(List<Map<String, Object>> list);
 
 	Map<String, Object> getCoordinate(Map<String, Object> coor);
+
+	List<Map<String, Object>> totalChart();
 }

@@ -53,6 +53,10 @@ public class ServletDAO extends EgovComAbstractDAO {
 		return selectOne("carbonMap.point", coor);
 		
 	}
+
+	public List<Map<String, Object>> totalChart() {
+		return selectList("carbonMap.totalChart");
+	}
 	
 
 }

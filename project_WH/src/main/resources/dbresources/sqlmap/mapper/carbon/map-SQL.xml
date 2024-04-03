@@ -18,42 +18,53 @@
 		SELECT
 		bjd_cd, sgg_cd, sum(use_amount) as usage
 		FROM "TB_CARBON_A4"
-		WHERE sgg_cd = #{sggcd}
+		WHERE
+		sgg_cd = #{sggcd}
 		group by bjd_cd, sgg_cd
 	</select>
 
 	<select id="bum" parameterType="String" resultType="Map">
 		SELECT
-		max(e.usage), min(e.usage), (max(e.usage) - min(e.usage))/ 5 as interval
+		max(e.usage), min(e.usage), (max(e.usage) - min(e.usage))/ 5 as
+		interval
 		FROM (SELECT bjd_cd, bjd_nm, sgg_cd, sum(use_amount) as usage
 		FROM "TB_CARBON_A4"
 		WHERE sgg_cd = #{sggcd}
-		group by bjd_cd, bjd_nm, sgg_cd) e
+		group by bjd_cd, bjd_nm,
+		sgg_cd) e
 	</select>
 
 	<select id="sdView" parameterType="String" resultType="Map">
 		select
-		(select ST_XMax(geom) as xmax FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by xmax desc limit 1), 
-		(select ST_YMax(geom) as ymax FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by ymax desc limit 1), 
-		(select ST_XMin(geom) as xmin FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by xmin limit 1), 
-		(select ST_YMin(geom) as ymin FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar order by ymin limit 1) 
+		(select ST_XMax(geom) as xmax FROM tl_sd WHERE sd_nm =
+		#{sd_nm}::varchar order by xmax desc limit 1),
+		(select ST_YMax(geom) as ymax FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar
+		order by ymax desc limit 1),
+		(select ST_XMin(geom) as xmin FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar
+		order by xmin limit 1),
+		(select ST_YMin(geom) as ymin FROM tl_sd WHERE sd_nm = #{sd_nm}::varchar
+		order by ymin limit 1)
 		from tl_sd limit 1
 	</select>
-	
+
 	<select id="sggView" parameterType="String" resultType="Map">
 		select
-    	(select ST_XMax(geom) as xmax FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar order by xmax desc limit 1), 
-    	(select ST_YMax(geom) as ymax FROM tl_sgg WHERE  sgg_nm = #{sggName}::varchar order by ymax desc limit 1), 
-    	(select  ST_XMin(geom) as xmin FROM tl_sgg WHERE  sgg_nm = #{sggName}::varchar order by xmin  limit 1), 
-    	(select ST_YMin(geom) as ymin FROM tl_sgg WHERE  sgg_nm = #{sggName}::varchar order by ymin limit 1)
+		(select ST_XMax(geom) as xmax FROM tl_sgg WHERE sgg_nm =
+		#{sggName}::varchar order by xmax desc limit 1),
+		(select ST_YMax(geom) as ymax FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar
+		order by ymax desc limit 1),
+		(select ST_XMin(geom) as xmin FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar
+		order by xmin limit 1),
+		(select ST_YMin(geom) as ymin FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar
+		order by ymin limit 1)
 		from tl_sgg limit 1
 	</select>
 
 	<insert id="fileUp" parameterType="Map">
-	 INSERT INTO "TB_CARBON_A4" (use_date, sgg_cd, bjd_cd, use_amount) 
-	 VALUES (#{use_date}, #{sgg_cd}, #{bjd_cd}, #{use_amount}::INTEGER)
+		INSERT INTO "TB_CARBON_A4" (use_date, sgg_cd, bjd_cd, use_amount)
+		VALUES (#{use_date}, #{sgg_cd}, #{bjd_cd}, #{use_amount}::INTEGER)
 	</insert>
-	
+
 	<select id="point" parameterType="Map" resultType="Map">
 		<![CDATA[
 		select sgg_cd, sgg_nm 
@@ -64,5 +75,12 @@
 		where (point.xmax > #{xvalue} and point.xmin < #{xvalue}) and (point.ymax > #{yvalue} and point.ymin < #{yvalue})
 		]]>
 	</select>
-	
+
+	<select id="totalChart" resultType="Map">
+		select sd_nm, sum(use_amount) as usage 
+		from "TB_CARBON_A4" 
+		where sd_nm is not null 
+		group by sd_nm 
+	</select>
+
 </mapper>

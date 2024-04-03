@@ -305,7 +305,10 @@ $(function(){
 
 					// 객체가 있을 경우
 					else
-					{
+					{	
+						
+						//ajax로 사용량 불러오기
+						
 						// GeoJSON에서 Feature를 생성
 						const feature = new ol.format.GeoJSON().readFeature(json.features[0]);
 
@@ -431,7 +434,7 @@ $(function(){
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 	<!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="index.html">탄소배출지도</a>
+    <a class="navbar-brand ps-3" href="maptest.do">탄소배출지도</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
         <i class="fas fa-bars"></i>

@@ -9,8 +9,8 @@
 <meta name="description" content="" />
 <meta name="author" content="" />
 <title>title</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js" integrity="sha512-O7kHS9ooekX8EveiC94z9xSvD/4xt10Qigl6uEKvspYykdux3Ci5QNu5fwi4ca0ZkZI/oCgx5ja8RklWUEqzxQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol-debug.css" integrity="sha512-hBSieZLd5rse9gdkfv4n0pDU4D04SxpqBtwDzRy/QiXRBhczDyfCTDTnHCada73ubNqiQv6BLgCRXHAJPUwC5w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link href="../resources/css/mapTest.css" rel="stylesheet">
 <link href="../resources/css/fileUp.css" rel="stylesheet">
@@ -36,26 +36,12 @@ $(function(){
        	center: ol.proj.transform([127.100616,37.402142], 'EPSG:4326', 'EPSG:3857'), //좌표계 변환
        	zoom: 7     
     });// 뷰 설정
-
-	const popup = document.getElementById('map-popup');
-
-	const overlay = new ol.Overlay({
-    	id: 'popup',
-    	element: popup || undefined,
-    	positioning: 'center-center',
-    	autoPan: {
-        	animation: {
-            	duration: 250
-        	}
-    	}
-	});
-
     
     var map = new ol.Map({
        	layers: [Base], //지도에서 사용할 레이어 목록 정의
        	target: 'map',
        	view: olView,
-       	overlays: [ overlay ]
+       	//overlays: [ overlay ]
     });
 	
     $("#sdSelect").on("change", function() {      
@@ -128,7 +114,6 @@ $(function(){
               	
               	wmsSgg = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	       		name : 'wms',
     	  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0', // 2. 버전
@@ -230,7 +215,6 @@ $(function(){
 	  	        	 	
 	  	        	 	bjdcode = new ol.layer.Tile({
 	  	  	          		source : new ol.source.TileWMS({
-	  	  	          			name : 'wms',
 	  	  	          			url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
 	  	  	          			params : {
 	  	  	          				'VERSION' : '1.1.0', // 2. 버전
@@ -268,58 +252,94 @@ $(function(){
 	//맵 클릭 이벤트
 	map.on('singleclick', async (evt) => {
 		
+		let container = document.createElement('div');
+	    container.classList.add('ol-popup-custom');
+	    
+	    let content = document.createElement('div');
+	    content.classList.add('popup-content');
+	    
+	    container.appendChild(content);
+	    document.body.appendChild(container);
+	    
+	    var coordinate = evt.coordinate; // 클릭한 지도 좌표
+
+	    
 		console.log(map.getLayers().getArray());
 		
 		const wmsLayer = map.getLayers().getArray().filter(layer => {
-	        return layer.getProperties().name() === 'wms';
+	        return layer.get("name") === 'wms';
 	    })[0];
 		
 		console.log(wmsLayer);
 		
 		const source = wmsLayer.getSource();
+		
+		console.log(source);
 			
-		const url = source.getFeatureInfoUrl(evt.coordinate, map.getView().getResolution() || 0, 'EPSG:3857', {
-			QUERY_LAYERS: 'testhere:tl_bjd',
+		const url = source.getFeatureInfoUrl(coordinate, map.getView().getResolution() || 0, 'EPSG:3857', {
+			QUERY_LAYERS: 'testhere:tl_sgg',
 			INFO_FORMAT: 'application/json'
 		});
+		
+		console.log(url);
 			
 		// GetFeatureInfo URL이 유효할 경우
-		if (url) {
-			// 응답이 유효할 경우
-			try {
-				const request = await fetch(url.toString(), { method: 'GET' });
-				// 응답이 정상일 경우
-				if (request.ok) {
-					const json = await request.json();
-					// 객체가 하나도 없을 경우
-					if (json.features.length === 0) {
-						overlay.setPosition(undefined);
-					} else { //객체가 있을 경우
-						//ceojson에서 feature 생성
-						const feature = new GeoJSON().readFeature(json.features[0]);
-						
-						//생성한 feature로 vectorsource 생성
-						const vector = new VectorSource({features : [feature]});
-						
-						setPopupState(
-							$('<ul>')
-		                         .append($('<li>').text(feature.get('sgg_nm') || '이름 없음'))
-		                         .append($('<li>').text(feature.get('sgg_cd') || ''))
-						);
-							
-						overlay.setPosition(getCenter(vector.getExtent()));
-					}
-				} else { //아닐 경우
-					 alert(request.status);
-				}
-								
-			} catch (e) {
-				alert(error.message);
-			}
-			
-		}
-	});		
+		if (url)
+		{
+			const request = await fetch(url.toString(), { method: 'GET' }).catch(e => alert(e.message));
 
+			// 응답이 유효할 경우
+			if (request)
+			{
+				// 응답이 정상일 경우
+				if (request.ok)
+				{
+					const json = await request.json();
+
+					// 객체가 하나도 없을 경우
+					if (json.features.length === 0)
+					{
+						overlay.setPosition(undefined);
+					}
+
+					// 객체가 있을 경우
+					else
+					{
+						// GeoJSON에서 Feature를 생성
+						const feature = new ol.format.GeoJSON().readFeature(json.features[0]);
+
+						// 생성한 Feature로 VectorSource 생성
+						const vector = new ol.source.Vector({ features: [ feature ] });
+						console.log(vector)
+						
+					    content.innerHTML = '<ul><span>' + feature.get('sgg_cd') + 'kwt' +
+					    					'</span></ul>';
+					    
+					    var overlay = new ol.Overlay({
+					        element: container,
+					        //autoPan: true,
+					        //autoPanAnimation: {
+					        //  duration: 250
+					        //}
+					      });
+						
+					    map.addOverlay(overlay);
+					    overlay.setPosition(coordinate);
+
+						//overlay.setPosition(getCenter(vector.getExtent()));
+					}
+				}
+
+				// 아닐 경우
+				else
+				{
+					alert(request.status);
+				}
+			}
+		}
+			
+	});		
+	
 
 		
 /* 	    var coordinate = evt.coordinate;
@@ -421,7 +441,80 @@ $(function(){
 })   
 	 	 
 </script>
+<style type="text/css">
+/* .ol-popup-custom {
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+    position: absolute;
+    background-color: white;
+    filter: drop-shadow(3px 3px 7px rgba(0,0,0,0.6));
+    border: 1px solid black;
+    width: 100px;
+    left: -50px; 
+    height: 30px;
+    bottom: -15px; 
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.popup-content {
+   position: absolute;
+   box-sizing: border-box;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   line-height: 100%;
+}
+.popup-content > span {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    height: 100%; 
+    font-size:9px;
+    font-weight: bold;
+    box-sizing: border-box;
+   text-align: center; 
+} */
+.ol-popup-custom {
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+    position: absolute;
+    background-color: white;
+    filter: drop-shadow(3px 3px 7px rgba(0,0,0,0.6));
+    border: 1px solid black;
+    width: 100px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    overflow: hidden;
+}
 
+.popup-content {
+   position: absolute;
+   box-sizing: border-box;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   width: 100%; /* 부모 요소에 맞추기 위해 */
+   height: 100%; /* 부모 요소에 맞추기 위해 */
+}
+
+.popup-content > span {
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    width: 100%; /* 부모 요소에 맞추기 위해 */
+    height: 100%; /* 부모 요소에 맞추기 위해 */
+    font-size: 9px;
+    font-weight: bold;
+    box-sizing: border-box;
+    text-align: center; /* 텍스트를 가운데로 정렬 */
+}
+
+</style>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">

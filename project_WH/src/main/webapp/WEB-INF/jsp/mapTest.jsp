@@ -36,11 +36,26 @@ $(function(){
        	center: ol.proj.transform([127.100616,37.402142], 'EPSG:4326', 'EPSG:3857'), //좌표계 변환
        	zoom: 7     
     });// 뷰 설정
+
+	const popup = document.getElementById('map-popup');
+
+	const overlay = new ol.Overlay({
+    	id: 'popup',
+    	element: popup || undefined,
+    	positioning: 'center-center',
+    	autoPan: {
+        	animation: {
+            	duration: 250
+        	}
+    	}
+	});
+
     
     var map = new ol.Map({
        	layers: [Base], //지도에서 사용할 레이어 목록 정의
        	target: 'map',
-       	view: olView
+       	view: olView,
+       	overlays: [ overlay ]
     });
 	
     $("#sdSelect").on("change", function() {      
@@ -113,6 +128,7 @@ $(function(){
               	
               	wmsSgg = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
+    	  	       		name : 'wms',
     	  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0', // 2. 버전
@@ -130,60 +146,15 @@ $(function(){
     	          
     	  	    map.addLayer(wmsSgg);
     	  	    
-             	//맵 클릭 이벤트
-    	  		map.on('singleclick', async (evt) => {
-    	  			
-    	  			const wmsLayer = map.getLayers().getArray().filter(layer => layer.get('name') === 'wms')[0];
-    	  			
-    	  			const source = wmsLayer.getSource();
-    	  			
-    	  			const url = source.getFeatureInfoUrl(evt.coordinate, map.getView().getResolution(), 'EPSG:3857', {
-    	  				QUERY_LAYERS: 'testhere:tl_sgg',
-    	  				INFO_FORMAT: 'application/json'
-    	  			});
-    	  			
-    	  			// GetFeatureInfo URL이 유효할 경우
-    	  			if (url) {
-    	  				const request = await fetch(url.toString(), { method: 'GET' }).catch(e => alert(e.message));
-    	  				// 응답이 유효할 경우
-    	  				if (request) {
-    	  					// 응답이 정상일 경우
-    	  					if (request.ok) {
-    	  						const json = await request.json();
-
-    	  						// 객체가 하나도 없을 경우
-    	  						if (json.features.length === 0) {
-    	  							overlay.setPosition(undefined);
-    	  						} else { //객체가 있을 경우
-    	  							//ceojson에서 feature 생성
-    	  							const feature = new GeoJSON().readFeature(json.features[0]);
-    	  							
-    	  							//생성한 feature로 vectorsource 생성
-    	  							const vector = new VectorSource({features : [feature]});
-    	  							
-    	  							setPopupState(
-    	  								'<div><li>' + feature.get('sgg_nm') + '</li><li>' + feature.get('sgg_cd') + '</li></div>'
-    	  							);
-    	  							
-    	  							overlay.setPosition(getCenter(vector.getExtent()));
-    	  						}
-    	  					} else { //아닐 경우
-    	  						 alert(request.status);
-    	  					}
-    	  				}
-    	  			}
-    	  		});	
            	},
            	error : function() {
               	alert("실패");
            	}
         })
-        
 
-    	
     });
     
-    
+
 /*     
     $(".insertbtn").click(function() {
 
@@ -259,6 +230,7 @@ $(function(){
 	  	        	 	
 	  	        	 	bjdcode = new ol.layer.Tile({
 	  	  	          		source : new ol.source.TileWMS({
+	  	  	          			name : 'wms',
 	  	  	          			url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
 	  	  	          			params : {
 	  	  	          				'VERSION' : '1.1.0', // 2. 버전
@@ -271,7 +243,8 @@ $(function(){
 	  	  	       					'TRANSPARENT' : 'TRUE',
 	  	  	          			},
 	  	  	          			serverType : 'geoserver',
-	  	  	          		})
+	  	  	          		}),
+	  	  	          		properties:{name:'wms'},
 	  	  	          	});
 	  	        	 	layerList.push(bjdcode);
   	                }
@@ -292,7 +265,60 @@ $(function(){
   	});
  	
 
-	
+	//맵 클릭 이벤트
+	map.on('singleclick', async (evt) => {
+		
+		console.log(map.getLayers().getArray());
+		
+		const wmsLayer = map.getLayers().getArray().filter(layer => {
+	        return layer.getProperties().name() === 'wms';
+	    })[0];
+		
+		console.log(wmsLayer);
+		
+		const source = wmsLayer.getSource();
+			
+		const url = source.getFeatureInfoUrl(evt.coordinate, map.getView().getResolution() || 0, 'EPSG:3857', {
+			QUERY_LAYERS: 'testhere:tl_bjd',
+			INFO_FORMAT: 'application/json'
+		});
+			
+		// GetFeatureInfo URL이 유효할 경우
+		if (url) {
+			// 응답이 유효할 경우
+			try {
+				const request = await fetch(url.toString(), { method: 'GET' });
+				// 응답이 정상일 경우
+				if (request.ok) {
+					const json = await request.json();
+					// 객체가 하나도 없을 경우
+					if (json.features.length === 0) {
+						overlay.setPosition(undefined);
+					} else { //객체가 있을 경우
+						//ceojson에서 feature 생성
+						const feature = new GeoJSON().readFeature(json.features[0]);
+						
+						//생성한 feature로 vectorsource 생성
+						const vector = new VectorSource({features : [feature]});
+						
+						setPopupState(
+							$('<ul>')
+		                         .append($('<li>').text(feature.get('sgg_nm') || '이름 없음'))
+		                         .append($('<li>').text(feature.get('sgg_cd') || ''))
+						);
+							
+						overlay.setPosition(getCenter(vector.getExtent()));
+					}
+				} else { //아닐 경우
+					 alert(request.status);
+				}
+								
+			} catch (e) {
+				alert(error.message);
+			}
+			
+		}
+	});		
 
 
 		

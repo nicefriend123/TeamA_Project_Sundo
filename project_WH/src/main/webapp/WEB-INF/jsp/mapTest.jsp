@@ -18,11 +18,12 @@
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet"/>
 <link href="../resources/css/styles.css" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 	
 $(function(){
 	
-	var wmsSd, wmsSgg, wmsBjd;
+	var wmsSd, wmsSgg, wmsBjd, bjdlegend, sgglegend;
     var layerList = [];
 		
 	var Base = new ol.layer.Tile({
@@ -74,7 +75,8 @@ $(function(){
     	  	          		'FORMAT' : 'image/png' // 포맷
     	  	        	},
     	  	        	serverType : 'geoserver',
-    	  	    	})
+    	  	    	}),
+    	  	    	properties:{name:'wms'}
 				}); 
     	          
     	  	    map.addLayer(wmsSd);
@@ -117,9 +119,9 @@ $(function(){
     	  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0', // 2. 버전
-    	  	          		'LAYERS' : 'testhere:tl_sgg', // 3. 작업공간:레이어 명
+    	  	          		'LAYERS' : 'testhere:tl_bjd', // 3. 작업공간:레이어 명
     	  	          		'CQL_FILTER' : sd_CQL,
-    	  	          		'STYLES' : 'carbon2',
+    	  	          		'STYLES' : 'carbon3',
     	  	          		'BBOX' : [1.386872E7, 3906626.5, 1.4428071E7, 4670269.5], 
     	  	          		'SRS' : 'EPSG:3857', // SRID
     	  	          		'FORMAT' : 'image/png' // 포맷
@@ -185,68 +187,103 @@ $(function(){
  */
  
 	$(".interval").click(function(){
-  		if ($("#legendSelect").val() == "equalInterval") {
-			map.removeLayer(wmsSd);   
-			map.removeLayer(wmsSgg);   
-  	       	var sggcode = $("#sggSelect").val();
-  	      	var bjdcode;
-  	        	        
-  	        $.ajax({
-  	        	url : "/equalInterval.do",
-  	        	type : "post",
-  	        	dataType : "json",
-  	        	data : {"sggcd" : sggcode},
-  	        	success : function(result) {
-  	        		
-  	    	        for (var j = 0; j < layerList.length; j++) {
-  	    	        	map.removeLayer(layerList[j]);						
-  	  				}
-  	    	      	
-  	    	        layerList = [];
-  	        		console.log(result);
-  	        	 	var sggcd2 = $("#sggSelect").val();
-  	        	 	console.log(sggcd2);
-  	        	 	     		
-  	                for(var i=0; i<result.length; i++){
-  	                	var b = result[i].bjdcd;
-	  	        	 	var bjdcd2 = b.substring(0, 3);
-	  	        	    var bjd_CQL = "bjd_cd=" + sggcd2 + bjdcd2;
-	  	        	 	var styles = "carbon" + result[i].level;
-	  	        	 	
-	  	        	 	bjdcode = new ol.layer.Tile({
-	  	  	          		source : new ol.source.TileWMS({
-	  	  	          			url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
-	  	  	          			params : {
-	  	  	          				'VERSION' : '1.1.0', // 2. 버전
-	  	  	          				'LAYERS' : 'testhere:tl_bjd', // 3. 작업공간:레이어 명
-	  	  	          				'CQL_FILTER' : bjd_CQL,
-	  	  	          				'BBOX' : [1.3873946E7, 3906626.5, 1.4428045E7, 4670269.5], 
-	  	  	       					'SRS' : 'EPSG:3857', // SRID
-	  	  	       					'STYLES' : styles,
-	  	  	       					'FORMAT' : 'image/png', // 포맷
-	  	  	       					'TRANSPARENT' : 'TRUE',
-	  	  	          			},
-	  	  	          			serverType : 'geoserver',
-	  	  	          		}),
-	  	  	          		properties:{name:'wms'},
-	  	  	          	});
-	  	        	 	layerList.push(bjdcode);
-  	                }
-					
-  	    	        for (var j = 0; j < layerList.length; j++) {
-  	    	        	map.addLayer(layerList[j]);						
-  	  				}
-  	        	},
-  	        	 error : function(){
-  	        	 	    alert("실패");
-  	        	 }
-  	        })
+        var sggcode = $("#sggSelect").val(); 
+		map.removeLayer(wmsSd);   
+	    
+	    if(sggcode == "" || sggcode == null){
+		    var sdcode = $("#sggSelect").val();
+	 	    //var sgg_CQL = "sgg_cd='"+ sggcode +"'";
+	    	alert("여기");
+	    	
+	    	 if ($("#legendSelect").val() == "equalInterval") {
+	    		sgglegend = new ol.layer.Tile({
+		  	       	source : new ol.source.TileWMS({
+		  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+		  	        	params : {
+		  	          		'VERSION' : '1.1.0', // 2. 버전
+		  	          		'LAYERS' : 'testhere:sggEqual', // 3. 작업공간:레이어 명
+		  	          		'CQL_FILTER' : sd_CQL,
+		  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
+		  	          		'SRS' : 'EPSG:3857', // SRID
+		  	          		'FORMAT' : 'image/png' // 포맷
+		  	        	},
+		  	        	serverType : 'geoserver',
+		  	    	}),
+		  	    	properties:{name:'wms'}
+				}); 
+		          
+	          	map.addLayer(sgglegend);
+	  	      	
+				
+	  	    	} else if($("#legendSelect").val() == "jenkins"){
+				
+	  	    		sgglegend = new ol.layer.Tile({
+		  	       		source : new ol.source.TileWMS({
+		  	    			url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+		  	        		params : {
+		  	          			'VERSION' : '1.1.0', // 2. 버전
+		  	          			'LAYERS' : 'testhere:sggNatural', // 3. 작업공간:레이어 명
+		  	          			'CQL_FILTER' : sd_CQL,
+		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
+		  	          			'SRS' : 'EPSG:3857', // SRID
+		  	          			'FORMAT' : 'image/png' // 포맷
+		  	        		},
+		  	        		serverType : 'geoserver',
+		  	    		}),
+		  	    		properties:{name:'wms'}
+					}); 
+		          
+	          		map.addLayer(sgglegend);
+				}
+	    	 
+		    } else {
+
+				map.removeLayer(wmsSgg);   
+		    	var sggcode = $("#sggSelect").val();
+	 	    	var sgg_CQL = "sgg_cd='"+ sggcode +"'";
 			
-  	    } else if($("#legendSelect").val() == "jenkins"){
-			
-		}
+	  			if ($("#legendSelect").val() == "equalInterval") {
+	  				bjdlegend = new ol.layer.Tile({
+			  	       	source : new ol.source.TileWMS({
+			  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+			  	        	params : {
+		  		          		'VERSION' : '1.1.0', // 2. 버전
+		  	    	      		'LAYERS' : 'testhere:bjdlayer', // 3. 작업공간:레이어 명
+		  	        	  		'CQL_FILTER' : sgg_CQL,
+		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
+		  	          			'SRS' : 'EPSG:3857', // SRID
+		  	          			'FORMAT' : 'image/png' // 포맷
+		  	        		},
+		  	        		serverType : 'geoserver',
+		  	    		}),
+		  	    		properties:{name:'wms'}
+					}); 
+		          
+	          		map.addLayer(bjdlegend);
+	  	      	
+	  	    	} else if($("#legendSelect").val() == "jenkins"){
+				
+	          	 	bjdlegend = new ol.layer.Tile({
+			  	       	source : new ol.source.TileWMS({
+			  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+			  	        	params : {
+		  		          		'VERSION' : '1.1.0', // 2. 버전
+		  	    	      		'LAYERS' : 'testhere:bjdnatural', // 3. 작업공간:레이어 명
+		  	        	  		'CQL_FILTER' : sgg_CQL,
+		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
+		  	          			'SRS' : 'EPSG:3857', // SRID
+		  	          			'FORMAT' : 'image/png' // 포맷
+		  	        		},
+		  	        		serverType : 'geoserver',
+		  	    		}),
+		  	    		properties:{name:'wms'}
+					}); 
+		          
+	          		map.addLayer(bjdlegend);
+				}
+	    	}
   	        
-  	});
+  		});
  	
 
 	//맵 클릭 이벤트
@@ -278,7 +315,7 @@ $(function(){
 		console.log(source);
 			
 		const url = source.getFeatureInfoUrl(coordinate, map.getView().getResolution() || 0, 'EPSG:3857', {
-			QUERY_LAYERS: 'testhere:tl_sgg',
+			QUERY_LAYERS: 'testhere:bjdlayer',
 			INFO_FORMAT: 'application/json'
 		});
 		
@@ -316,8 +353,8 @@ $(function(){
 						const vector = new ol.source.Vector({ features: [ feature ] });
 						console.log(vector)
 						
-					    content.innerHTML = '<div class="info">' + feature.get('sgg_nm') +
-					    					'</div><div class="info">' + feature.get('sgg_cd') + ' kwt' +
+					    content.innerHTML = '<div class="info">' + feature.get('sgg_cd') +
+					    					'</div><div class="info">' + feature.get('totalusage') + ' kwt' +
 					    					'</div>';
 					    
 					    var overlay = new ol.Overlay({
@@ -475,6 +512,22 @@ $(function(){
       		</div>
 			<div id="toastBox"></div>
 			<div id="map-popup"></div>
+			
+	        <!-- Modal -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  			<div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal">&times;</button>
+				      </div>
+				      <div class="modal-body">
+				        <div class="chart" id="chart_div" style="width:100%; height:100%;"></div>
+				      </div>
+				      <div class="modal-footer">
+				      </div>
+				    </div>
+				  </div>
+			</div>
         </main>
         <footer class="py-4 bg-light mt-auto">
         	<div class="container-fluid px-4">
@@ -486,8 +539,12 @@ $(function(){
 </div>
 
 
-
 <script type="text/javascript">
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
+let chart = [];
+chart = ${sdChart};	
 
 function showToast(message) {
 	let toast = document.getElementById('toastBox');
@@ -498,18 +555,45 @@ function showToast(message) {
     }, 5000); // 3초
 }
 
-/* const popup = document.getElementById('map-popup');
-const overlay = new Overlay({
-	id: 'popup',
-	element: popup || undefined,
-	positioning: 'center-center',
-	autoPan: {
-		animation: {
-			duration: 250
-		}
+		
+function drawChart() {
+	
+	let totalChart = [];
+		
+	for (var i = 0; i < chart.length; i++) {
+		let element = [chart[i].sd_nm, chart[i].usage];
+		totalChart.push(element);
 	}
-}); */
+	
+	totalChart.unshift(['지역명', '배출량']);
+
+	// Create the data table.
+    var data = new google.visualization.arrayToDataTable(totalChart);
+	
+	// Set chart options
+    var options = {
+    	chart: {
+        	title: '탄소배출량',
+       		},
+        bars: 'horizontal', // Required for Material Bar Charts.
+        hAxis: {format: 'decimal'},
+        height: 600,
+        colors: ['#1b9e77'],
+        legend: {
+        	position: 'none'
+        	},
+    };
+
+    // chart 보이기
+    var obj = document.getElementById('chart_div');
+    var chartObj = new google.visualization.BarChart(obj);
+    chartObj.draw(data, options);
+	}
+	
+
 </script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../resources/js/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>

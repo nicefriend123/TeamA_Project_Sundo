@@ -29,4 +29,6 @@ public interface ServletService {
 	Map<String, Object> getCoordinate(Map<String, Object> coor);
 
 	List<Map<String, Object>> totalChart();
+
+	List<Map<String, Object>> sdChart(String sdName);
 }

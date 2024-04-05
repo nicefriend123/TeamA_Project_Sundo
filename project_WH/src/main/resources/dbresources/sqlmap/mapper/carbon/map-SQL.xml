@@ -82,5 +82,12 @@
 		where sd_nm is not null 
 		group by sd_nm 
 	</select>
+	
+	<select id="sdChart" parameterType="String" resultType="Map">
+		select sgg_nm as sd_nm , sum(use_amount) as usage 
+		from "TB_CARBON_A4" 
+		where sd_nm = #{sdName}
+		group by sgg_nm 
+	</select>
 
 </mapper>

@@ -82,6 +82,11 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	public List<Map<String, Object>> totalChart() {		
 		return dao.totalChart();
 	}
+
+	@Override
+	public List<Map<String, Object>> sdChart(String sdName) {
+		return dao.sdChart(sdName);
+	}
 	
 	
 }

@@ -3,7 +3,7 @@
 	<div class="sb-sidenav-menu">
 		<div class="nav">
 			<div class="sb-sidenav-menu-heading">지도 보기</div>
-			<a id="mapPage" class="nav-link collapsed[href='maptest.do']" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+			<a id="mapPage" class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
 				<i class="fas fa-tachometer-alt"></i>
 				 탄소배출지도
 				<div class="sb-sidenav-collapse-arrow">
@@ -48,12 +48,35 @@
 					</a>
 				</nav>
 			</div>
-			<div class="sb-sidenav-menu-heading">통계</div>
-			<a class="nav-link" href="chart.do">
+			<a class="nav-link" href="/chart.do">
+				<i class="fas fa-chart-area"></i>
+ 	 			Charts
+			</a>
+			<div class="sb-sidenav-menu-heading" href="/chart.do">통계</div>
+			<a class="nav-link collapsed" data-bs-toggle="collapse" data-bs-target="#collapseChart" aria-expanded="false" aria-controls="collapseChart">
 				<i class="fas fa-chart-area"></i>
 				Charts
+				<div class="sb-sidenav-collapse-arrow">
+					<i class="fas fa-angle-down"></i>
+				</div>
 			</a>
+			<div class="collapse" id="collapseChart" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+				<nav class="sb-sidenav-menu-nested nav">
+					<a class="nav-link">
+						<select id="sdChart" class="form-select">
+							<option>시도 선택</option>
+							<c:forEach items="${totalChart }" var="item">
+								<option class="sggNm">${item.sd_nm}</option>
+							</c:forEach>
+						</select>
+						<div class="selectBox">
+							<button id="chartView">보기</button>
+						</div>
+					</a>
+				</nav>
+			</div>
 		</div>
 	</div>
 </nav>
+
 

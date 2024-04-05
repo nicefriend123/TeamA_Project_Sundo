@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.style.ValueStyler;
 import org.springframework.stereotype.Controller;
@@ -70,6 +71,19 @@ public class ServletController {
 		
 		List<Map<String, Object>> sdlist = servletService.sdList();
 		model.addAttribute("sdlist", sdlist);
+		
+		List<Map<String, Object>> totalChart = servletService.totalChart();
+		model.addAttribute("totalChart", totalChart);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String sdChart = mapper.writeValueAsString(totalChart);
+			//System.out.println(jsonChart);
+			sdChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(totalChart);
+			System.out.println(sdChart);
+			model.addAttribute("sdChart", sdChart);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		
 		return "mapTest";
 	}
@@ -233,23 +247,47 @@ public class ServletController {
 	@GetMapping("/chart.do")
 	public String chart (Model model) {
 		List<Map<String, Object>> totalChart = servletService.totalChart();
+		model.addAttribute("totalChart", totalChart);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
 		try {
-			
-			String jsonChart = mapper.writeValueAsString(totalChart);
-			System.out.println(jsonChart);
+			String sdChart = mapper.writeValueAsString(totalChart);
+			//System.out.println(jsonChart);
 
-			jsonChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(totalChart);
-			System.out.println(jsonChart);
-			model.addAttribute("jsonChart", jsonChart);
+			sdChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(totalChart);
+			System.out.println(sdChart);
+			model.addAttribute("sdChart", sdChart);
 			
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-		}		
+		}
+		
 		
 		return "chart";
+	}
+	
+	@PostMapping(value= "/chart.do", produces = "application/text; charset=UTF-8")
+	public @ResponseBody String sidoChart(@RequestParam("sido") String sdName) {
+		
+		List<Map<String, Object>> sdChart = servletService.sdChart(sdName);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String sggChart = "";
+		
+		try {
+			sggChart = mapper.writeValueAsString(sdChart);
+			//System.out.println(sdChart);
+			sggChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(sggChart);
+			//System.out.println(sggChart);
+			
+			
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return sggChart;
 	}
 	
 }

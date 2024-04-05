@@ -19,37 +19,78 @@
 <link href="../resources/css/styles.css" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
+<style type="text/css">
+main{
+	width: 100%;
+	height: 100%;
+}
+.map_content{
+	width: 100%;
+	height: 100%;
+}
+</style>
 <script type="text/javascript">
-	google.charts.load('current', {'packages':['bar']});
+	google.charts.load('current', {'packages':['corechart']});
 	google.charts.setOnLoadCallback(drawChart);
 
-	let totalChart = [];
-    totalChart = ${jsonChart};
-    var row = totalChart.length;
-		
+	let chartData = [];
+	chartData = ${sdChart};	
+			
 	function drawChart() {
-		// Create the data table.
-	    var data = new google.visualization.DataTable();
-    	data.addColumn('string', 'sido');
-    	data.addColumn('number', 'usage');
-    	
-    	data.addRows(row);
-    	
-    	for (var i = 0; i < row; i++) {
-	    	data.setCell(i, 0, totalChart[i].sd_nm);
-	    	data.setCell(i, 1, totalChart[i].usage);					
+ 		let totalChart = [];
+		for (var i = 0; i < chartData.length; i++) {
+			let element = [chartData[i].sd_nm, chartData[i].usage];
+			totalChart.push(element);
 		}
+		totalChart.unshift(['지역명', '배출량']);
 
-
+		// Create the data table.
+	    var data = new google.visualization.arrayToDataTable(totalChart);
+    	
     	// Set chart options
-    	var options = {
-                   bar: 'horizontal' 
-        	};
+        var options = {
+        	chart: {
+            	title: '탄소배출량',
+           		},
+            bars: 'horizontal', // Required for Material Bar Charts.
+            hAxis: {format: 'decimal'},
+            height: 600,
+            colors: ['#1b9e77'],
+            legend: {
+            	position: 'none'
+            	},
+        };
 
 	    // chart 보이기
-	    var chart = new google.charts.Bar(document.getElementById('chart_div'));
-	    chart.draw(data, google.charts.Bar.convertOptions(options));
+	    var obj = document.getElementById('chart_div');
+	    var chart = new google.visualization.BarChart(obj);
+	    chart.draw(data, options);
   	}
+	
+
+$(function(){
+	
+    $("#chartView").on("click", function() {      
+       	var sido = $("#sdChart option:checked").text();
+       	
+       	$.ajax({
+        	url : "/chart.do",
+           	type : "post",
+           	dataType : "json",
+   	        data : {"sido" : sido},
+   	        async: false,
+     	    success : function(result) {
+     	    	var sggdata = JSON.parse(result);
+     	    	chartData = sggdata;
+     	    	google.charts.setOnLoadCallback(drawChart);
+              
+           	},
+           	error : function() {
+              	alert("실패");
+           	}
+        })
+     });	
+})
 
 </script>
 </head>
@@ -94,8 +135,9 @@
         <main>
 			<div class="map_content">
 <!--         		<div class="map" id="map" style="width: 1150px; height: 800px;"></div> -->
-			<div id="chart_div" style="width:400; height:300"></div>
-      	</div>
+				<div id="chart_div" style="width:100%; height:100%;">
+				</div>
+      		</div>
         </main>
         <footer class="py-4 bg-light mt-auto">
         	<div class="container-fluid px-4">
@@ -104,7 +146,6 @@
         </footer>
 	</div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../resources/js/scripts.js"></script>

@@ -27,21 +27,36 @@ main{
 .map_content{
 	width: 100%;
 	height: 100%;
+	display : row;
+}
+#chart_div{
+	width: 80%; 
+	height:auto;
+}
+#chart_tb{
+	margin-left:50px;
+	width: 60%; 
+	height:auto;
 }
 </style>
 <script type="text/javascript">
 	google.charts.load('current', {'packages':['corechart']});
-	google.charts.setOnLoadCallback(drawChart);
 
 	let chartData = [];
 	chartData = ${sdChart};	
-			
+	console.log(chartData);
+	
+	google.charts.setOnLoadCallback(drawChart);
+
 	function drawChart() {
  		let totalChart = [];
+		renderTable(chartData);
+ 		
 		for (var i = 0; i < chartData.length; i++) {
 			let element = [chartData[i].sd_nm, chartData[i].usage];
 			totalChart.push(element);
 		}
+		
 		totalChart.unshift(['지역명', '배출량']);
 
 		// Create the data table.
@@ -49,9 +64,7 @@ main{
     	
     	// Set chart options
         var options = {
-        	chart: {
-            	title: '탄소배출량',
-           		},
+            "title": '시도 별 탄소배출량',
             bars: 'horizontal', // Required for Material Bar Charts.
             hAxis: {format: 'decimal'},
             height: 600,
@@ -67,7 +80,18 @@ main{
 	    chart.draw(data, options);
   	}
 	
-
+    function renderTable(chartData) {
+        let tbodyData = [];
+        //for (const iterator of chartData) {
+        for (var i = 0; i < chartData.length; i++) {
+            tbodyData.push(
+            		"<tr><td>" + chartData[i].sd_nm + "</td><td>" + chartData[i].usage + "</td></tr>"
+            )
+        }
+        console.log(tbodyData);
+        document.querySelector('#chartTB > tbody').innerHTML = tbodyData.join("");
+    }
+	
 $(function(){
 	
     $("#chartView").on("click", function() {      
@@ -135,7 +159,25 @@ $(function(){
         <main>
 			<div class="map_content">
 <!--         		<div class="map" id="map" style="width: 1150px; height: 800px;"></div> -->
-				<div id="chart_div" style="width:100%; height:100%;">
+				<div id="chart_div">
+				</div>
+				<div id="chart_tb">
+					<div class="card mb-4">
+						<div class="card-header">시도별 탄소 배출량</div>
+						<div class="card-body">
+							<div class="datatable-wrapper fixed-columns">
+								<table id="chartTB" class="datatable-table">
+									<thead>
+										<tr>
+											<th>지역 명</th>
+											<th>탄소 배출량</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
       		</div>
         </main>

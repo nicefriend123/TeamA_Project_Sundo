@@ -24,7 +24,9 @@
 $(function(){
 	
 	var wmsSd, wmsSgg, wmsBjd, bjdlegend, sgglegend;
-    var layerList = [];
+    //var layerList = [];
+    var sggcode;
+    var overlay;
 		
 	var Base = new ol.layer.Tile({
 		name : "Base",
@@ -45,7 +47,9 @@ $(function(){
        	//overlays: [ overlay ]
     });
 	
-    $("#sdSelect").on("change", function() {      
+    $("#sdSelect").on("change", function() {
+    	map.removeLayer(sgglegend);
+    	map.removeOverlay(overlay);
     	var sd_CQL = "sd_cd="+$("#sdSelect").val();
        	var test = $("#sdSelect option:checked").text();
        	
@@ -69,14 +73,12 @@ $(function(){
     	  	          		'VERSION' : '1.1.0', // 2. 버전
     	  	          		'LAYERS' : 'testhere:el_test', // 3. 작업공간:레이어 명
     	  	          		'CQL_FILTER' : sd_CQL,
-    	  	          		'STYLES' : 'carbonBase',
     	  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
     	  	          		'SRS' : 'EPSG:3857', // SRID
     	  	          		'FORMAT' : 'image/png' // 포맷
     	  	        	},
     	  	        	serverType : 'geoserver',
     	  	    	}),
-    	  	    	properties:{name:'wms'}
 				}); 
     	          
     	  	    map.addLayer(wmsSd);
@@ -100,9 +102,13 @@ $(function(){
     
     
     $("#sggSelect").on("change", function(){
+    	map.removeOverlay(overlay);
+    	map.removeLayer(bjdlegend);  
     	//var sdName = $("#sdSelect").val();
     	var sggName = $("#sggSelect option:checked").text();
-    	var sd_CQL = "sgg_cd="+$("#sggSelect").val();
+    	sggcode = $("#sggSelect").val(); 
+    	//var sd_CQL = "sgg_cd="+$("#sggSelect").val();
+    	var sd_CQL = "sgg_cd="+ sggcode
     	
     	$.ajax({
         	url : "/sggSelect.do",
@@ -121,14 +127,12 @@ $(function(){
     	  	          		'VERSION' : '1.1.0', // 2. 버전
     	  	          		'LAYERS' : 'testhere:tl_bjd', // 3. 작업공간:레이어 명
     	  	          		'CQL_FILTER' : sd_CQL,
-    	  	          		'STYLES' : 'carbon3',
     	  	          		'BBOX' : [1.386872E7, 3906626.5, 1.4428071E7, 4670269.5], 
     	  	          		'SRS' : 'EPSG:3857', // SRID
     	  	          		'FORMAT' : 'image/png' // 포맷
     	  	        	},
     	  	        	serverType : 'geoserver',
     	  	    	}),
-    	  	    	properties:{name:'wms'}
 				}); 
     	          
     	  	    map.addLayer(wmsSgg);
@@ -140,60 +144,15 @@ $(function(){
         })
 
     });
-    
-
-/*     
-    $(".insertbtn").click(function() {
-
-    	map.removeLayer(wmsSd);
-        //map.removeLayer(wmsSgg);
-        //map.removeLayer(wmsBjd);        
-        var sggcode = $("#sggSelect").val();       
-        var sgg_CQL = "sgg_cd="+$("#sggSelect").val();
-        
-    	$.ajax({
-       		url : "/sggSelect.do",
-	       	type : "post",
-    	   	dataType : "json",
-	        data : {"sggcd" : sggcode},
- 	     	success : function(result) {
- 	     		
- 	        	wmsBjd = new ol.layer.Tile({
-  	          		source : new ol.source.TileWMS({
-  	          			url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
-  	          			params : {
-  	          				'VERSION' : '1.1.0', // 2. 버전
-  	          				'LAYERS' : 'testhere:tl_bjd', // 3. 작업공간:레이어 명
-  	          				'CQL_FILTER' : sgg_CQL,
-  	          				'STYLES' : 'carbon1',
-  	          				'BBOX' : [1.3873946E7, 3906626.5, 1.4428045E7, 4670269.5], 
-  	       					'SRS' : 'EPSG:3857', // SRID
-  	        				'FORMAT' : 'image/png' // 포맷
-  	          			},
-  	          			serverType : 'geoserver',
-  	          		})
-  	          	}); 
-
-  	        	map.addLayer(wmsBjd); 
- 	     		
- 	       	},
- 	       	error : function() {
- 	          	alert("실패");
- 	       	}
- 	    })
-
- 	});
-	        	   	
- */
- 
+     
 	$(".interval").click(function(){
-        var sggcode = $("#sggSelect").val(); 
+        sggcode = $("#sggSelect").val(); 
 		map.removeLayer(wmsSd);   
+		map.removeLayer(sgglegend);
 	    
-	    if(sggcode == "" || sggcode == null){
-		    var sdcode = $("#sggSelect").val();
-	 	    //var sgg_CQL = "sgg_cd='"+ sggcode +"'";
-	    	alert("여기");
+	    if(sggcode == "시군구 선택" || sggcode == "" || sggcode == null){
+		    var sdcode = $("#sdSelect").val();
+	 	    var sd_CQL = "sd_cd='"+ sdcode +"'";
 	    	
 	    	 if ($("#legendSelect").val() == "equalInterval") {
 	    		sgglegend = new ol.layer.Tile({
@@ -239,6 +198,7 @@ $(function(){
 		    } else {
 
 				map.removeLayer(wmsSgg);   
+				map.removeLayer(bjdlegend);   
 		    	var sggcode = $("#sggSelect").val();
 	 	    	var sgg_CQL = "sgg_cd='"+ sggcode +"'";
 			
@@ -288,6 +248,7 @@ $(function(){
 
 	//맵 클릭 이벤트
 	map.on('singleclick', async (evt) => {
+		map.removeOverlay(overlay);
 		
 		let container = document.createElement('div');
 	    container.setAttribute("class", "ol-popup-custom");
@@ -300,26 +261,30 @@ $(function(){
 	    document.body.appendChild(container);
 	    
 	    var coordinate = evt.coordinate; // 클릭한 지도 좌표
-
 	    
-		console.log(map.getLayers().getArray());
+		//console.log(map.getLayers().getArray());
 		
 		const wmsLayer = map.getLayers().getArray().filter(layer => {
 	        return layer.get("name") === 'wms';
 	    })[0];
 		
-		console.log(wmsLayer);
 		
 		const source = wmsLayer.getSource();
 		
-		console.log(source);
-			
+		const param = source.getParams();
+		
+		//console.log(source);
+		//console.log(param);
+		//console.log(param['LAYERS']);
+		
+	    const layerName = param['LAYERS'];
+		
 		const url = source.getFeatureInfoUrl(coordinate, map.getView().getResolution() || 0, 'EPSG:3857', {
-			QUERY_LAYERS: 'testhere:bjdlayer',
+			QUERY_LAYERS: layerName,
 			INFO_FORMAT: 'application/json'
 		});
 		
-		console.log(url);
+		//console.log(url);
 			
 		// GetFeatureInfo URL이 유효할 경우
 		if (url)
@@ -351,13 +316,21 @@ $(function(){
 
 						// 생성한 Feature로 VectorSource 생성
 						const vector = new ol.source.Vector({ features: [ feature ] });
-						console.log(vector)
+						//console.log(vector)
 						
-					    content.innerHTML = '<div class="info">' + feature.get('sgg_cd') +
-					    					'</div><div class="info">' + feature.get('totalusage') + ' kwt' +
+						var usageValue = feature.get('totalusage');
+						var placeName =  feature.get('bjd_nm');
+						
+						if(usageValue == null){
+							usageValue = feature.get('amount');
+							placeName =  feature.get('sgg_nm');
+						} 
+						
+					    content.innerHTML = '<div class="info">' + placeName + 
+					    					'</div><div class="info">' + usageValue + ' kwt' +
 					    					'</div>';
 					    
-					    var overlay = new ol.Overlay({
+					    overlay = new ol.Overlay({
 					        element: container,
 					      });
 						

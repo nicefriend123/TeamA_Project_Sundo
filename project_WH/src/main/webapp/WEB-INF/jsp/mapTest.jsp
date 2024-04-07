@@ -486,15 +486,15 @@ $(function(){
         		<div class="form-group">
 					<label class="menuTitle">파일첨부</label>
 					<input id="fileInput" filestyle="" type="file" name="upFile" data-class-button="btn btn-default" data-class-input="form-control" data-button-text="" data-icon-name="fa fa-upload" class="form-control" tabindex="-1" style="position: absolute; width:100%; clip: rect(0px 0px 0px 0px);">
-					<div class="bootstrap-filestyle input-group">
+					<div class="bootstrap-filestyle input-group" id="chooseFile">
 						<input type="text" id="userfile" class="form-control" disabled="">
 						<span class="group-span-filestyle input-group-btn" tabindex="0">
-							<label for="fileInput" class="btn btn-default">
+							<label for="fileInput" class="btn btn-default rounded-end">
 								<span class="glyphicon fa fa-upload"></span>
 							</label>
 						</span>
 					</div>
-					<div class="btn btn-secondary btn-sm mt-1" id="upLodadBtn">업로드</div>
+					<div class="btn btn-secondary btn-sm mt-1 rounded" id="upLodadBtn">업로드</div>
 				</div>
         	</div>
         	<!-- 지도 화면 -->
@@ -502,7 +502,7 @@ $(function(){
         		<div class="map" id="map" style="width: 1150px; height: 800px;"></div>
       		</div>
 			<div id="toastBox"></div>
-			<div id="map-popup"></div>			
+			<div id="map-popup"></div>
 			
         </main>
         <footer class="py-4 bg-light mt-auto">

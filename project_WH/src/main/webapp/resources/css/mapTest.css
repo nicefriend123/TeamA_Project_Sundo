@@ -7,6 +7,10 @@ main{
 .map_sideMenu{
 	width: 20%;
 	height: 100%;
+	background-color: #cad2e6;
+}
+#chooseFile{
+	border : 1px solid grey;
 }
 .map_content{
 	width: 80%;

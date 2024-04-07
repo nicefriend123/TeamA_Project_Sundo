@@ -19,39 +19,31 @@
 <link href="../resources/css/styles.css" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 <style type="text/css">
-main{
-	width: 100%;
-	height: 100%;
-}
-.map_content{
-	width: 100%;
-	height: 100%;
-	display : row;
-}
 #chart_div{
-	width: 80%; 
+	width: 100%; 
 	height:auto;
 }
 #chart_tb{
-	margin-left:50px;
-	width: 60%; 
+	margin-left:100px;
+	width: 70%; 
 	height:auto;
 }
 </style>
 <script type="text/javascript">
 	google.charts.load('current', {'packages':['corechart']});
+	google.charts.setOnLoadCallback(drawChart);
 
 	let chartData = [];
 	chartData = ${sdChart};	
-	console.log(chartData);
-	
-	google.charts.setOnLoadCallback(drawChart);
 
 	function drawChart() {
- 		let totalChart = [];
+		
 		renderTable(chartData);
- 		
+		
+ 		let totalChart = [];
+		
 		for (var i = 0; i < chartData.length; i++) {
 			let element = [chartData[i].sd_nm, chartData[i].usage];
 			totalChart.push(element);
@@ -88,14 +80,17 @@ main{
             		"<tr><td>" + chartData[i].sd_nm + "</td><td>" + chartData[i].usage + "</td></tr>"
             )
         }
-        console.log(tbodyData);
+        //console.log(tbodyData);
         document.querySelector('#chartTB > tbody').innerHTML = tbodyData.join("");
     }
+            
+
 	
 $(function(){
 	
     $("#chartView").on("click", function() {      
        	var sido = $("#sdChart option:checked").text();
+       	var sdCode = $('#sdChart').val();
        	
        	$.ajax({
         	url : "/chart.do",
@@ -107,7 +102,8 @@ $(function(){
      	    	var sggdata = JSON.parse(result);
      	    	chartData = sggdata;
      	    	google.charts.setOnLoadCallback(drawChart);
-              
+     	    	document.querySelector(".card-header").innerText = "시군구별 탄소 배출량";
+     	    	
            	},
            	error : function() {
               	alert("실패");
@@ -157,8 +153,24 @@ $(function(){
 	</div>
 	<div id="layoutSidenav_content">
         <main>
+        	        	<!-- 사이드 메뉴 -->
+        	<div class="map_sideMenu">
+        		<!-- 지역별 사용량 -->
+        		<div class="form-group mb-3">
+	        		<label class="menuTitle">시도별 탄소 배출량</label>
+	        		<div class="input-group mb-2">
+	        				<select id="sdChart" class="form-select form-select-sm">
+								<option>시도 선택</option>
+								<c:forEach items="${totalChart }" var="sd">
+									<option class="sd" value="${sd.sd_cd }">${sd.sd_nm}</option>
+								</c:forEach>
+							</select>					
+	        		</div>     		
+					<div class="btn btn-secondary btn-sm" id ="chartView">보기</div>
+        		</div>
+
+        	</div>
 			<div class="map_content">
-<!--         		<div class="map" id="map" style="width: 1150px; height: 800px;"></div> -->
 				<div id="chart_div">
 				</div>
 				<div id="chart_tb">

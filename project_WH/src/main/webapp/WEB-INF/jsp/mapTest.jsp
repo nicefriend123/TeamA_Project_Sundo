@@ -19,6 +19,7 @@
 <link href="../resources/css/styles.css" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 <script type="text/javascript">
 	
 $(function(){
@@ -145,7 +146,7 @@ $(function(){
 
     });
      
-	$(".interval").click(function(){
+	$("#interval").click(function(){
         sggcode = $("#sggSelect").val(); 
 		map.removeLayer(wmsSd);   
 		map.removeLayer(sgglegend);
@@ -355,10 +356,11 @@ $(function(){
 	
   	
  	//파일 업로드
-	$("#submitBtn").click(function(){
+	$("#upLodadBtn").click(function(){
 		
 		var formData = new FormData();
 		var inputFile = $("input[name='upFile']");
+		//var inputFile = $("#fileInput").val();
 		var files = inputFile[0].files;
 		//console.log(files);
 		
@@ -398,57 +400,30 @@ $(function(){
 	});
   
   
-  
+
+ 	//파일업2
+ 	$("#fileInput").on('change', function(){  
+		if(window.FileReader){  // modern browser
+			var filename = $(this)[0].files[0].name;
+		} else {  
+ 			var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
+		}
+
+ 		// 추출한 파일명 삽입
+		$("#userfile").val(filename);
+	});
 })   
 	 	 
 </script>
-<style type="text/css">
-.ol-popup-custom {
-    padding: 0;
-    margin: 0;
-    pointer-events: none;
-    position: absolute;
-    background-color: white;
-    filter: drop-shadow(3px 3px 7px rgba(0,0,0,0.6));
-    border: 1px solid black;
-    min-width: 120px;
-    width: auto;
-    left: -60px; /* 위치를 조정, -width의 절반값 */
-    min-height: 48px;
-    height: auto;
-    bottom: -50%; /* 위치를 조정, -height의 절반값 */
-    box-sizing: border-box;
-    text-align: center;
-    overflow: hidden;
-}
-.popup-content {
-	display : block;
-   	position: absolute;
-   	width: 100%;
-   	box-sizing: border-box;
-   	line-height: 100%;
-}
-.info {
-    display: inline-block;
-    line-height: 100%;
-    width: 100%;
-   	height:auto;
-    font-size:10px;
-    font-weight: bold;
-    box-sizing: border-box;
-    justify-content: center;
-}
-
-</style>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-	<!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="maptest.do">탄소배출지도</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
         <i class="fas fa-bars"></i>
 	</button>
+	<!-- Navbar Brand-->
+    <a class="navbar-brand ps-3" href="maptest.do">탄소배출지도</a>
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
@@ -480,27 +455,55 @@ $(function(){
 	</div>
 	<div id="layoutSidenav_content">
         <main>
+        	<!-- 사이드 메뉴 -->
+        	<div class="map_sideMenu">
+        		<!-- 범례 -->
+        		<div class="form-group mb-3">
+	        		<label class="menuTitle">지도 보기</label>
+	        		<div class="input-group mb-2">
+	        				<select id="sdSelect" class="form-select form-select-sm">
+								<option>시도 선택</option>
+								<c:forEach items="${sdlist }" var="sd">
+									<option class="sd" value="${sd.sd_cd }">${sd.sd_nm}</option>
+								</c:forEach>
+							</select>					
+	        		</div>
+	        		<div class="input-group mb-2">
+							<select id="sggSelect" class="form-select form-select-sm">
+								<option>시군구 선택</option>
+							</select>
+	        		</div>					
+	        		<div class="input-group mb-1">
+							<select name="legend" id="legendSelect" class="form-select form-select-sm">
+								<option>범례 선택</option>
+								<option class="legend" value="jenkins">NaturalBreaks</option>
+								<option class="legend" value="equalInterval">등간격</option>
+							</select>
+	        		</div>       		
+					<div class="btn btn-secondary btn-sm" id ="interval">보기</div>
+        		</div>
+        		<!-- 파일 업로드 -->	
+        		<div class="form-group">
+					<label class="menuTitle">파일첨부</label>
+					<input id="fileInput" filestyle="" type="file" name="upFile" data-class-button="btn btn-default" data-class-input="form-control" data-button-text="" data-icon-name="fa fa-upload" class="form-control" tabindex="-1" style="position: absolute; width:100%; clip: rect(0px 0px 0px 0px);">
+					<div class="bootstrap-filestyle input-group">
+						<input type="text" id="userfile" class="form-control" disabled="">
+						<span class="group-span-filestyle input-group-btn" tabindex="0">
+							<label for="fileInput" class="btn btn-default">
+								<span class="glyphicon fa fa-upload"></span>
+							</label>
+						</span>
+					</div>
+					<div class="btn btn-secondary btn-sm mt-1" id="upLodadBtn">업로드</div>
+				</div>
+        	</div>
+        	<!-- 지도 화면 -->
 			<div class="map_content">
         		<div class="map" id="map" style="width: 1150px; height: 800px;"></div>
       		</div>
 			<div id="toastBox"></div>
-			<div id="map-popup"></div>
+			<div id="map-popup"></div>			
 			
-	        <!-- Modal -->
-			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	  			<div class="modal-dialog">
-				    <div class="modal-content">
-				      <div class="modal-header">
-				        <button type="button" class="close" data-dismiss="modal">&times;</button>
-				      </div>
-				      <div class="modal-body">
-				        <div class="chart" id="chart_div" style="width:100%; height:100%;"></div>
-				      </div>
-				      <div class="modal-footer">
-				      </div>
-				    </div>
-				  </div>
-			</div>
         </main>
         <footer class="py-4 bg-light mt-auto">
         	<div class="container-fluid px-4">
@@ -525,7 +528,7 @@ function showToast(message) {
 	toast.style.display = 'block';
     setTimeout(function() {
         toast.style.display = 'none';
-    }, 5000); // 3초
+    }, 3000); // 3초
 }
 
 		

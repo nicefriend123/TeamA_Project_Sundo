@@ -29,6 +29,7 @@ $(function(){
     var sggcode;
     var overlay;
     
+    $(".legendTable").hide();
     
 		
 	var Base = new ol.layer.Tile({
@@ -228,6 +229,8 @@ $(function(){
 	 	    	place = sggcode;	
 			
 	  			if ($("#legendSelect").val() == "equalInterval") {
+	  				select = "3";
+	  				
 	  				bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
 			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
@@ -247,7 +250,7 @@ $(function(){
 	          		map.addLayer(bjdlegend);
 	  	      	
 	  	    	} else if($("#legendSelect").val() == "jenkins"){
-	  	    		select = "2";
+	  	    		select = "4";
 				
 	          	 	bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
@@ -283,7 +286,9 @@ $(function(){
 		     	    }
 		 	    })
 	    	}
-  	        
+	    
+	    	$(".legendTable").show();
+	    
   		});
  	
 
@@ -456,13 +461,15 @@ $(function(){
 
 function legendTable(data, select){
 	
+	document.querySelector('#legendContent > tbody').innerHTML = "";
+	
     let tbodyData = [];
     
     let colors;
     
-    if(select == "1"){
+    if(select == "1" || select == "3"){
     	colors = "eqimg";
-    } else if(select == "2"){    	
+    } else if(select == "2" || select == "4"){    	
     	colors = "ntimg";
     }
    	
@@ -471,7 +478,7 @@ function legendTable(data, select){
         		"<tr><td><img height='100%;' src='../resources/assets/img/" + colors + (i + 1) + ".png'/> </td><td style='font-size: 10px'>" + data[i].start + " ~ " + data[i].end  + "</td></tr>"
         )
     }
-    document.querySelector('#legendContent > tbody').innerHTML = tbodyData.join("");	
+    document.querySelector('#legendContent > tbody').innerHTML = tbodyData.join("");
 }
 
 </script>

@@ -225,7 +225,7 @@ public class ServletController {
 		br.close();
 		isr.close();
 		
-		return "redirect:/fileUp";
+		return "redirect:/mapTest";
 	}
 	
 	@PostMapping("/getCoordinate.do")
@@ -325,9 +325,9 @@ public class ServletController {
 		//System.out.println(select);
 		List<Map<String, Object>> bjdLegend = new ArrayList<Map<String, Object>>();
 		
-		if (select.equals("1")) {
+		if (select.equals("3")) {
 			bjdLegend = servletService.bjdLegendE(place);			
-		} else if (select.equals("2")) {
+		} else if (select.equals("4")) {
 			bjdLegend = servletService.bjdLegendN(place);
 		}
 		

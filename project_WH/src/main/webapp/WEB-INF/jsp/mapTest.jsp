@@ -448,13 +448,18 @@ $(function(){
 
  	//파일업2
  	$("#fileInput").on('change', function(){  
+ 		var fileType = $(this).val().split('/').pop().split('\\').pop().split('.').pop();
+ 		
+ 		if(fileType != "txt"){
+ 			alert("업로드 가능한 파일 유형이 아닙니다.");
+ 			return false;
+ 		}
 		if(window.FileReader){  // modern browser
 			var filename = $(this)[0].files[0].name;
 		} else {  
  			var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
 		}
-
- 		// 추출한 파일명 삽입
+ 	 		// 추출한 파일명 삽입
 		$("#userfile").val(filename);
 	});
 })   

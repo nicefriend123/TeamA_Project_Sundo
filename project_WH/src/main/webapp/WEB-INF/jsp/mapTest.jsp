@@ -69,10 +69,10 @@ $(function(){
      	     		
     	        wmsSd = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0', // 2. 버전
-    	  	          		'LAYERS' : 'testhere:el_test', // 3. 작업공간:레이어 명
+    	  	          		'LAYERS' : 'teamA4:ta4sdview', // 3. 작업공간:레이어 명
     	  	          		'CQL_FILTER' : sd_CQL,
     	  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
     	  	          		'SRS' : 'EPSG:3857', // SRID
@@ -123,10 +123,10 @@ $(function(){
               	
               	wmsSgg = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0', // 2. 버전
-    	  	          		'LAYERS' : 'testhere:tl_bjd', // 3. 작업공간:레이어 명
+    	  	          		'LAYERS' : 'teamA4:tl_bjd', // 3. 작업공간:레이어 명
     	  	          		'CQL_FILTER' : sd_CQL,
     	  	          		'BBOX' : [1.386872E7, 3906626.5, 1.4428071E7, 4670269.5], 
     	  	          		'SRS' : 'EPSG:3857', // SRID

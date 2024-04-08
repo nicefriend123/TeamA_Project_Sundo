@@ -150,18 +150,36 @@ $(function(){
         sggcode = $("#sggSelect").val(); 
 		map.removeLayer(wmsSd);   
 		map.removeLayer(sgglegend);
+		var place;
+	    var legendArr = [];
 	    
 	    if(sggcode == "시군구 선택" || sggcode == "" || sggcode == null){
 		    var sdcode = $("#sdSelect").val();
 	 	    var sd_CQL = "sd_cd='"+ sdcode +"'";
+	 	    place = sdcode;
+	 	    
+	 	    $.ajax({
+	        	url : "/legendTable.do",
+	           	type : "post",
+	           	dataType : "json",
+	   	        data : {"place" : place},
+	     	    success : function(result) {
+	     	    	
+	     	    },
+	     	    error : function() {
+	     	    	alert("통신 오류");
+	     	    }
+	 	    })
 	    	
 	    	 if ($("#legendSelect").val() == "equalInterval") {
+	    		 
+	    		 
 	    		sgglegend = new ol.layer.Tile({
 		  	       	source : new ol.source.TileWMS({
-		  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+		  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
 		  	        	params : {
 		  	          		'VERSION' : '1.1.0', // 2. 버전
-		  	          		'LAYERS' : 'testhere:sggEqual', // 3. 작업공간:레이어 명
+		  	          		'LAYERS' : 'teamA4:sggEqual', // 3. 작업공간:레이어 명
 		  	          		'CQL_FILTER' : sd_CQL,
 		  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          		'SRS' : 'EPSG:3857', // SRID
@@ -173,16 +191,15 @@ $(function(){
 				}); 
 		          
 	          	map.addLayer(sgglegend);
-	  	      	
-				
+
 	  	    	} else if($("#legendSelect").val() == "jenkins"){
 				
 	  	    		sgglegend = new ol.layer.Tile({
 		  	       		source : new ol.source.TileWMS({
-		  	    			url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+		  	    			url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
 		  	        		params : {
 		  	          			'VERSION' : '1.1.0', // 2. 버전
-		  	          			'LAYERS' : 'testhere:sggNatural', // 3. 작업공간:레이어 명
+		  	          			'LAYERS' : 'teamA4:sggNatural', // 3. 작업공간:레이어 명
 		  	          			'CQL_FILTER' : sd_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          			'SRS' : 'EPSG:3857', // SRID
@@ -206,10 +223,10 @@ $(function(){
 	  			if ($("#legendSelect").val() == "equalInterval") {
 	  				bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
-			  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
 			  	        	params : {
 		  		          		'VERSION' : '1.1.0', // 2. 버전
-		  	    	      		'LAYERS' : 'testhere:bjdlayer', // 3. 작업공간:레이어 명
+		  	    	      		'LAYERS' : 'teamA4:bjdEqual', // 3. 작업공간:레이어 명
 		  	        	  		'CQL_FILTER' : sgg_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          			'SRS' : 'EPSG:3857', // SRID
@@ -226,10 +243,10 @@ $(function(){
 				
 	          	 	bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
-			  	    		url : 'http://localhost/geoserver/testhere/wms', // 1. 레이어 URL
+			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
 			  	        	params : {
 		  		          		'VERSION' : '1.1.0', // 2. 버전
-		  	    	      		'LAYERS' : 'testhere:bjdnatural', // 3. 작업공간:레이어 명
+		  	    	      		'LAYERS' : 'teamA4:bjdNatural', // 3. 작업공간:레이어 명
 		  	        	  		'CQL_FILTER' : sgg_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          			'SRS' : 'EPSG:3857', // SRID
@@ -241,6 +258,7 @@ $(function(){
 					}); 
 		          
 	          		map.addLayer(bjdlegend);
+	        	   
 				}
 	    	}
   	        
@@ -499,11 +517,21 @@ $(function(){
         	</div>
         	<!-- 지도 화면 -->
 			<div class="map_content">
-        		<div class="map" id="map" style="width: 1150px; height: 800px;"></div>
+        		<div class="map" id="map" style="width: 100%; height: 100%;"></div>
+				<div class="legendTable">
+					<table class="legendContent">
+						<tr>
+							<th colspan="2">범례</th>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+        		</div>
       		</div>
 			<div id="toastBox"></div>
 			<div id="map-popup"></div>
-			
         </main>
         <footer class="py-4 bg-light mt-auto">
         	<div class="container-fluid px-4">
@@ -516,11 +544,6 @@ $(function(){
 
 
 <script type="text/javascript">
-google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(drawChart);
-
-let chart = [];
-chart = ${sdChart};	
 
 function showToast(message) {
 	let toast = document.getElementById('toastBox');
@@ -531,42 +554,9 @@ function showToast(message) {
     }, 3000); // 3초
 }
 
-		
-function drawChart() {
+function legendTable(){
 	
-	let totalChart = [];
-		
-	for (var i = 0; i < chart.length; i++) {
-		let element = [chart[i].sd_nm, chart[i].usage];
-		totalChart.push(element);
-	}
-	
-	totalChart.unshift(['지역명', '배출량']);
-
-	// Create the data table.
-    var data = new google.visualization.arrayToDataTable(totalChart);
-	
-	// Set chart options
-    var options = {
-    	chart: {
-        	title: '탄소배출량',
-       		},
-        bars: 'horizontal', // Required for Material Bar Charts.
-        hAxis: {format: 'decimal'},
-        height: 600,
-        colors: ['#1b9e77'],
-        legend: {
-        	position: 'none'
-        	},
-    };
-
-    // chart 보이기
-    var obj = document.getElementById('chart_div');
-    var chartObj = new google.visualization.BarChart(obj);
-    chartObj.draw(data, options);
-	}
-	
-
+}
 </script>
 
 

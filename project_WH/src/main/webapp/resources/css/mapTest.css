@@ -18,6 +18,15 @@ main{
 	display : row;
 }
 
+.legendTable{
+	border: 1px solid black;
+	width: 200px;
+	height: 250px;
+	top: -40%;
+	right: -80%;
+	position: relative;
+}
+
 #map {
 	top: 50%;
     left: 50%;

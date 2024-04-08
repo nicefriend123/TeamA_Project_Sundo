@@ -290,4 +290,8 @@ public class ServletController {
 		return sggChart;
 	}
 	
+	@PostMapping("/legendTable.do")
+	public String legendTable() {
+		return null;
+	}
 }

@@ -89,5 +89,62 @@
 		where sd_nm = #{sdName}
 		group by sgg_nm 
 	</select>
+	
+	<select id="sggLegendE" parameterType="String" resultType="Map">
+		WITH intervals AS (
+		    SELECT 
+		        min(amount) AS min_amount,
+		        max(amount) AS max_amount,
+		        (max(amount) - min(amount)) / 5 AS interval
+		    FROM 
+		        a4sggtables3 
+		    WHERE 
+		        sd_cd = #{place}
+		    GROUP BY 
+		        sd_cd
+		),
+		numbers AS (
+		    SELECT generate_series(0, 4) AS num
+		)
+		SELECT trunc(intervals.min_amount + (intervals.interval * numbers.num)) AS start, 
+		    trunc(intervals.min_amount + (intervals.interval * (numbers.num + 1))) AS end 
+		FROM intervals, numbers
+	</select>
+	
+	<select id="sggLegendN" parameterType="String" resultType="Map">
+		SELECT unnest (cdb_jenksbins(array_agg(asg1.amount), 5, 0, true)) AS start, 
+			unnest (cdb_jenksbins(array_agg(asg1.amount), 5)) AS end 
+        FROM a4sggtables3 asg1 
+        where asg1.sd_cd = #{place} 
+	</select>
+	
+	<select id="bjdLegendE" parameterType="String" resultType="Map">
+		WITH intervals AS (
+		    SELECT 
+		        min(totalusage) AS min_amount,
+		        max(totalusage) AS max_amount,
+		        (max(totalusage) - min(totalusage)) / 5 AS interval
+		    FROM 
+		        a4bjdtable
+		    WHERE 
+		        sgg_cd = #{place}
+		    GROUP BY 
+		        sgg_cd
+		),
+		numbers AS (
+		    SELECT generate_series(0, 4) AS num 
+		)
+		SELECT trunc(intervals.min_amount + (intervals.interval * numbers.num)) AS start, 
+		    trunc(intervals.min_amount + (intervals.interval * (numbers.num + 1))) AS end 
+		FROM intervals, numbers
+	</select>
+
+	<select id="bjdLegendN" parameterType="String" resultType="Map">
+	 	SELECT unnest (cdb_jenksbins(array_agg(ab.totalusage), 5, 0, true)) AS start, 
+            unnest (cdb_jenksbins(array_agg(ab.totalusage), 5)) AS end 
+        FROM a4bjdtable ab
+        where ab.sgg_cd = #{place}
+	</select>
+	
 
 </mapper>

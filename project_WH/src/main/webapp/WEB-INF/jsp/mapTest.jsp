@@ -28,6 +28,8 @@ $(function(){
     //var layerList = [];
     var sggcode;
     var overlay;
+    
+    
 		
 	var Base = new ol.layer.Tile({
 		name : "Base",
@@ -92,7 +94,6 @@ $(function(){
               	}
               
               	$("#sggSelect").append(listSgg);
-
               		
            	},
            	error : function() {
@@ -152,27 +153,15 @@ $(function(){
 		map.removeLayer(sgglegend);
 		var place;
 	    var legendArr = [];
+	    var select;
 	    
 	    if(sggcode == "시군구 선택" || sggcode == "" || sggcode == null){
 		    var sdcode = $("#sdSelect").val();
 	 	    var sd_CQL = "sd_cd='"+ sdcode +"'";
-	 	    place = sdcode;
+	 	    place = sdcode;	
+	 	   	select = "1";
 	 	    
-	 	    $.ajax({
-	        	url : "/legendTable.do",
-	           	type : "post",
-	           	dataType : "json",
-	   	        data : {"place" : place},
-	     	    success : function(result) {
-	     	    	
-	     	    },
-	     	    error : function() {
-	     	    	alert("통신 오류");
-	     	    }
-	 	    })
-	    	
-	    	 if ($("#legendSelect").val() == "equalInterval") {
-	    		 
+	    	if ($("#legendSelect").val() == "equalInterval") {
 	    		 
 	    		sgglegend = new ol.layer.Tile({
 		  	       	source : new ol.source.TileWMS({
@@ -184,16 +173,18 @@ $(function(){
 		  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          		'SRS' : 'EPSG:3857', // SRID
 		  	          		'FORMAT' : 'image/png' // 포맷
-		  	        	},
-		  	        	serverType : 'geoserver',
-		  	    	}),
-		  	    	properties:{name:'wms'}
-				}); 
+		  	        		},
+		  	        		serverType : 'geoserver',
+		  	    		}),
+		  	    		properties:{name:'wms'}
+					}); 
 		          
-	          	map.addLayer(sgglegend);
+	          		map.addLayer(sgglegend);
 
 	  	    	} else if($("#legendSelect").val() == "jenkins"){
-				
+	  	    		
+	  	    		select = "2";
+	  	    		
 	  	    		sgglegend = new ol.layer.Tile({
 		  	       		source : new ol.source.TileWMS({
 		  	    			url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
@@ -211,14 +202,30 @@ $(function(){
 					}); 
 		          
 	          		map.addLayer(sgglegend);
-				}
+				}		    	
 	    	 
+	    	
+		 	    $.ajax({
+		        	url : "/sggLegendTable.do",
+		           	type : "post",
+		           	dataType : "json",
+		   	        data : {"place" : place , "select" : select},
+		     	    success : function(result) {
+		     	    	//console.log(result)
+		     	    	legendTable(result, select);
+		     	    },
+		     	    error : function() {
+		     	    	alert("통신 오류");
+		     	    }
+		 	    })
+		    	
 		    } else {
 
 				map.removeLayer(wmsSgg);   
 				map.removeLayer(bjdlegend);   
 		    	var sggcode = $("#sggSelect").val();
 	 	    	var sgg_CQL = "sgg_cd='"+ sggcode +"'";
+	 	    	place = sggcode;	
 			
 	  			if ($("#legendSelect").val() == "equalInterval") {
 	  				bjdlegend = new ol.layer.Tile({
@@ -240,6 +247,7 @@ $(function(){
 	          		map.addLayer(bjdlegend);
 	  	      	
 	  	    	} else if($("#legendSelect").val() == "jenkins"){
+	  	    		select = "2";
 				
 	          	 	bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
@@ -260,6 +268,20 @@ $(function(){
 	          		map.addLayer(bjdlegend);
 	        	   
 				}
+	  			
+		 	    $.ajax({
+		        	url : "/bjdLegendTable.do",
+		           	type : "post",
+		           	dataType : "json",
+		   	        data : {"place" : place , "select" : select},
+		     	    success : function(result) {
+		     	    	//console.log(result)
+		     	    	legendTable(result, select);
+		     	    },
+		     	    error : function() {
+		     	    	alert("통신 오류");
+		     	    }
+		 	    })
 	    	}
   	        
   		});
@@ -346,7 +368,7 @@ $(function(){
 						} 
 						
 					    content.innerHTML = '<div class="info">' + placeName + 
-					    					'</div><div class="info">' + usageValue + ' kwt' +
+					    					'</div><div class="info">' + usageValue + ' kwh' +
 					    					'</div>';
 					    
 					    overlay = new ol.Overlay({
@@ -431,7 +453,27 @@ $(function(){
 		$("#userfile").val(filename);
 	});
 })   
-	 	 
+
+function legendTable(data, select){
+	
+    let tbodyData = [];
+    
+    let colors;
+    
+    if(select == "1"){
+    	colors = "eqimg";
+    } else if(select == "2"){    	
+    	colors = "ntimg";
+    }
+   	
+    for (var i = 0; i < data.length - 1 ; i++) {
+        tbodyData.push(
+        		"<tr><td><img height='100%;' src='../resources/assets/img/" + colors + (i + 1) + ".png'/> </td><td style='font-size: 10px'>" + data[i].start + " ~ " + data[i].end  + "</td></tr>"
+        )
+    }
+    document.querySelector('#legendContent > tbody').innerHTML = tbodyData.join("");	
+}
+
 </script>
 </head>
 <body class="sb-nav-fixed">
@@ -518,15 +560,15 @@ $(function(){
         	<!-- 지도 화면 -->
 			<div class="map_content">
         		<div class="map" id="map" style="width: 100%; height: 100%;"></div>
-				<div class="legendTable">
-					<table class="legendContent">
-						<tr>
-							<th colspan="2">범례</th>
-						</tr>
-						<tr>
-							<td></td>
-							<td></td>
-						</tr>
+				<div class="legendTable" style="background-color: white">
+					<table id="legendContent" class="table table-borderless">
+						<thead>
+							<tr>
+								<th colspan="2">범례</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
 					</table>
         		</div>
       		</div>
@@ -554,9 +596,6 @@ function showToast(message) {
     }, 3000); // 3초
 }
 
-function legendTable(){
-	
-}
 </script>
 
 

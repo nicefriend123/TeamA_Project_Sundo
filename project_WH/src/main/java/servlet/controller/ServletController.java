@@ -290,8 +290,60 @@ public class ServletController {
 		return sggChart;
 	}
 	
-	@PostMapping("/legendTable.do")
-	public String legendTable() {
-		return null;
+	@PostMapping("/sggLegendTable.do")
+	public @ResponseBody String sggLegendTable(@RequestParam("place") String place, @RequestParam("select") String select) {
+		
+		
+		//System.out.println(select);
+		List<Map<String, Object>> sggLegend = new ArrayList<Map<String, Object>>();
+		
+		if (select.equals("1")) {
+			sggLegend = servletService.sggLegendE(place);			
+		} else if (select.equals("2")) {
+			sggLegend = servletService.sggLegendN(place);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String sggChartLegend = "";
+		
+		try {
+			sggChartLegend = mapper.writeValueAsString(sggLegend);
+			sggChartLegend = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(sggLegend);
+			System.out.println(sggChartLegend);
+			
+			
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return sggChartLegend;
+	}
+	@PostMapping("/bjdLegendTable.do")
+	public @ResponseBody String bjdLegendTable(@RequestParam("place") String place, @RequestParam("select") String select) {
+		
+		
+		//System.out.println(select);
+		List<Map<String, Object>> bjdLegend = new ArrayList<Map<String, Object>>();
+		
+		if (select.equals("1")) {
+			bjdLegend = servletService.bjdLegendE(place);			
+		} else if (select.equals("2")) {
+			bjdLegend = servletService.bjdLegendN(place);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String bjdChartLegend = "";
+		
+		try {
+			bjdChartLegend = mapper.writeValueAsString(bjdLegend);
+			bjdChartLegend = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(bjdLegend);
+			System.out.println(bjdChartLegend);
+			
+			
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return bjdChartLegend;
 	}
 }

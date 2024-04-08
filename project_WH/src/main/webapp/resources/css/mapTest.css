@@ -20,8 +20,8 @@ main{
 
 .legendTable{
 	border: 1px solid black;
-	width: 200px;
-	height: 250px;
+	width: 250px;
+	height: 300px;
 	top: -40%;
 	right: -80%;
 	position: relative;

@@ -61,6 +61,22 @@ public class ServletDAO extends EgovComAbstractDAO {
 	public List<Map<String, Object>> sdChart(String sdName) {
 		return selectList("carbonMap.sdChart", sdName);
 	}
+
+	public List<Map<String, Object>> sggLegendE(String place) {
+		return selectList("carbonMap.sggLegendE", place);
+	}
+
+	public List<Map<String, Object>> sggLegendN(String place) {
+		return selectList("carbonMap.sggLegendN", place);
+	}
+
+	public List<Map<String, Object>> bjdLegendE(String place) {
+		return selectList("carbonMap.bjdLegendE", place);
+	}
+
+	public List<Map<String, Object>> bjdLegendN(String place) {
+		return selectList("carbonMap.bjdLegendN", place);
+	}
 	
 
 }

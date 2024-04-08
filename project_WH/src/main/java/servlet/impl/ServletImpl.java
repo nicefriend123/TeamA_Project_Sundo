@@ -87,6 +87,26 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	public List<Map<String, Object>> sdChart(String sdName) {
 		return dao.sdChart(sdName);
 	}
+
+	@Override
+	public List<Map<String, Object>> sggLegendE(String place) {
+		return dao.sggLegendE(place);
+	}
+
+	@Override
+	public List<Map<String, Object>> sggLegendN(String place) {
+		return dao.sggLegendN(place);
+	}
+
+	@Override
+	public List<Map<String, Object>> bjdLegendE(String place) {
+		return dao.bjdLegendE(place);
+	}
+
+	@Override
+	public List<Map<String, Object>> bjdLegendN(String place) {
+		return dao.bjdLegendN(place);
+	}
 	
 	
 }

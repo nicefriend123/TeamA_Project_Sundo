@@ -31,4 +31,12 @@ public interface ServletService {
 	List<Map<String, Object>> totalChart();
 
 	List<Map<String, Object>> sdChart(String sdName);
+
+	List<Map<String, Object>> sggLegendE(String place);
+
+	List<Map<String, Object>> sggLegendN(String place);
+
+	List<Map<String, Object>> bjdLegendE(String place);
+
+	List<Map<String, Object>> bjdLegendN(String place);
 }

@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 <meta name="description" content="" />
 <meta name="author" content="" />
-<title>title</title>
+<title>탄소 배출 지도</title>
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -37,18 +37,17 @@ $(function(){
 		source: new ol.source.XYZ({
 			url: 'https://api.vworld.kr/req/wmts/1.0.0/1C6740EE-D23E-3A90-8F40-1D342D80666C/Base/{z}/{y}/{x}.png'
 		})
-	}); // WMTS API 사용
+	}); 
 		
    	var olView = new ol.View({
-       	center: ol.proj.transform([127.100616,37.402142], 'EPSG:4326', 'EPSG:3857'), //좌표계 변환
-       	zoom: 7     
-    });// 뷰 설정
+       	center: ol.proj.transform([127.100616,37.402142], 'EPSG:4326', 'EPSG:3857'), 
+       	zoom: 6     
+    });
     
     var map = new ol.Map({
-       	layers: [Base], //지도에서 사용할 레이어 목록 정의
+       	layers: [Base], 
        	target: 'map',
        	view: olView,
-       	//overlays: [ overlay ]
     });
 	
     $("#sdSelect").on("change", function() {
@@ -106,7 +105,8 @@ $(function(){
     
     $("#sggSelect").on("change", function(){
     	map.removeOverlay(overlay);
-    	map.removeLayer(bjdlegend);  
+    	map.removeLayer(bjdlegend);
+    	map.removeLayer(wmsSgg);
     	//var sdName = $("#sdSelect").val();
     	var sggName = $("#sggSelect option:checked").text();
     	sggcode = $("#sggSelect").val(); 
@@ -487,7 +487,7 @@ function legendTable(data, select){
    	
     for (var i = 0; i < data.length ; i++) {
         tbodyData.push(
-        		"<tr><td><img height='100%;' src='../resources/assets/img/" + colors + (i + 1) + ".png'/> </td><td style='font-size: 10px'>" + data[i].start + " ~ " + data[i].end  + "</td></tr>"
+        		"<tr><td><img height='100%;' src='../resources/assets/img/" + colors + (i + 1) + ".png'/></td><td style='font-size: 13px;' valign=middle>" + data[i].start + " ~ " + data[i].end  + "</td></tr>"
         )
     }
     document.querySelector('#legendContent > tbody').innerHTML = tbodyData.join("");
@@ -558,7 +558,7 @@ function legendTable(data, select){
 								<th colspan="2">범례</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody valign=middle>
 						</tbody>
 					</table>
         		</div>

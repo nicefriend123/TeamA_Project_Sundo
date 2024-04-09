@@ -9,8 +9,8 @@ main{
 	height: 100%;
 	background-color: #cad2e6;
 }
-#chooseFile{
-	
+#legendContent {
+	text-align: center;
 }
 .map_content{
 	width: 80%;
@@ -22,9 +22,10 @@ main{
 	border: 1px solid black;
 	width: 250px;
 	height: 300px;
-	top: -40%;
-	right: -80%;
+	top: -45%;
+	right: -75%;
 	position: relative;
+	opacity: 80%;
 }
 
 #map {

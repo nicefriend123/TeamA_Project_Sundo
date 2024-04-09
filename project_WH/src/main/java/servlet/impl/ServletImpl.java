@@ -107,6 +107,11 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	public List<Map<String, Object>> bjdLegendN(String place) {
 		return dao.bjdLegendN(place);
 	}
+
+	@Override
+	public void refreshData() {
+		dao.refreshData();
+	}
 	
 	
 }

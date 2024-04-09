@@ -48,22 +48,32 @@
 	</select>
 
 	<select id="sggView" parameterType="String" resultType="Map">
+	with geomselect as (
+		select * 
+		FROM tl_sgg
+		where not geom isnull)
 		select
-		(select ST_XMax(geom) as xmax FROM tl_sgg WHERE sgg_nm =
-		#{sggName}::varchar order by xmax desc limit 1),
-		(select ST_YMax(geom) as ymax FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar
+		(select ST_XMax(geom) as xmax FROM geomselect WHERE sgg_nm LIKE CONCAT(#{sggName},'%')::varchar 
+		order by xmax desc limit 1),
+		(select ST_YMax(geom) as ymax FROM geomselect WHERE sgg_nm LIKE CONCAT(#{sggName},'%')::varchar
 		order by ymax desc limit 1),
-		(select ST_XMin(geom) as xmin FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar
+		(select ST_XMin(geom) as xmin FROM geomselect WHERE sgg_nm LIKE CONCAT(#{sggName},'%')::varchar
 		order by xmin limit 1),
-		(select ST_YMin(geom) as ymin FROM tl_sgg WHERE sgg_nm = #{sggName}::varchar
+		(select ST_YMin(geom) as ymin FROM geomselect WHERE sgg_nm LIKE CONCAT(#{sggName},'%')::varchar
 		order by ymin limit 1)
-		from tl_sgg limit 1
+		from geomselect limit 1
 	</select>
+	
 
 	<insert id="fileUp" parameterType="Map">
 		INSERT INTO "TB_CARBON_A4" (use_date, sgg_cd, bjd_cd, use_amount)
 		VALUES (#{use_date}, #{sgg_cd}, #{bjd_cd}, #{use_amount}::INTEGER)
 	</insert>
+
+	<update id="refreshData">
+		REFRESH MATERIALIZED VIEW a4sgggrade2 with data;
+		REFRESH MATERIALIZED VIEW a4bjdtable with data;
+	</update>
 
 	<select id="point" parameterType="Map" resultType="Map">
 		<![CDATA[

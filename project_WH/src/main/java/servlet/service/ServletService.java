@@ -39,4 +39,6 @@ public interface ServletService {
 	List<Map<String, Object>> bjdLegendE(String place);
 
 	List<Map<String, Object>> bjdLegendN(String place);
+
+	void refreshData();
 }

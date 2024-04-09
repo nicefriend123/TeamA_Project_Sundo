@@ -110,7 +110,7 @@ $(function(){
     	//var sdName = $("#sdSelect").val();
     	var sggName = $("#sggSelect option:checked").text();
     	sggcode = $("#sggSelect").val(); 
-    	//var sd_CQL = "sgg_cd="+$("#sggSelect").val();
+    	console.log(sggcode);
     	var sd_CQL = "sgg_cd="+ sggcode
     	
     	$.ajax({
@@ -213,10 +213,10 @@ $(function(){
 		   	        data : {"place" : place , "select" : select},
 		     	    success : function(result) {
 		     	    	//console.log(result)
-		     	    	legendTable(result, select);
+			     	    	legendTable(result, select);	     	    		
 		     	    },
 		     	    error : function() {
-		     	    	alert("통신 오류");
+		     	    	alert("범례를 선택하세요");
 		     	    }
 		 	    })
 		    	
@@ -282,12 +282,14 @@ $(function(){
 		     	    	legendTable(result, select);
 		     	    },
 		     	    error : function() {
-		     	    	alert("통신 오류");
+		     	    	alert("범례를 선택하세요");
 		     	    }
 		 	    })
 	    	}
-	    
-	    	$(".legendTable").show();
+	    	
+	    if($("#legendSelect").val() != "범례 선택"){
+	    	$(".legendTable").show();	    	
+	    }
 	    
   		});
  	
@@ -428,23 +430,26 @@ $(function(){
 			dataType : "text",
 			data : formData,
 	        beforeSend: function(){
-	        	showToast("전송중..");
+	        	showUploadingToast("전송중입니다...");
 	        },
 			success : function(result){
-				showToast("완료!");
-	
+				hideToast();
+				$("#userfile").val("");
 			},
 			error : function(){
 				showToast("통신 실패");
+				$("#userfile").val("");
 				
 			}
 		}).done(function(data) {
-
+			showToast("완료!");
         })
 		
 	});
   
-  
+	$('#fileInput').on('fileuploadprogress', function (e, data) {
+	    console.log(data.loaded, data.total, data.bitrate);
+	});
 
  	//파일업2
  	$("#fileInput").on('change', function(){  
@@ -490,35 +495,7 @@ function legendTable(data, select){
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-    <!-- Sidebar Toggle-->
-    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
-        <i class="fas fa-bars"></i>
-	</button>
-	<!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="maptest.do">탄소배출지도</a>
-    <!-- Navbar Search-->
-    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-        <div class="input-group">
-          <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch"/>
-          <button class="btn btn-primary" id="btnNavbarSearch" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-	</form>
-    <!-- Navbar-->
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-    	<li class="nav-item dropdown">
-        	<a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        		<i class="fas fa-user fa-fw"></i>
-        	</a>
-          	<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            	<li><a class="dropdown-item" href="#!">Settings</a></li>
-            	<li><a class="dropdown-item" href="#!">Activity Log</a></li>
-            	<li><hr class="dropdown-divider" /></li>
-            	<li><a class="dropdown-item" href="#!">Logout</a></li>
-          	</ul>
-        </li>
-	</ul>
+	<%@ include file="./header.jsp" %>
 </nav>
 <div id="layoutSidenav">
 	<div id="layoutSidenav_nav">
@@ -605,7 +582,18 @@ function showToast(message) {
 	toast.style.display = 'block';
     setTimeout(function() {
         toast.style.display = 'none';
-    }, 3000); // 3초
+    }, 1000); // 1초
+}
+
+function showUploadingToast(message){
+	let toast = document.getElementById('toastBox');
+	toast.innerText = message;
+	toast.style.display = 'block';
+}
+
+function hideToast(){
+	let toast = document.getElementById('toastBox');
+	toast.style.display = 'none';
 }
 
 </script>

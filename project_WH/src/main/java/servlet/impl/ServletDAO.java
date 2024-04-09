@@ -77,6 +77,10 @@ public class ServletDAO extends EgovComAbstractDAO {
 	public List<Map<String, Object>> bjdLegendN(String place) {
 		return selectList("carbonMap.bjdLegendN", place);
 	}
+
+	public Object refreshData() {
+		return update("carbonMap.refreshData");
+	}
 	
 
 }

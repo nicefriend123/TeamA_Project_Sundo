@@ -1,5 +1,7 @@
 package servlet.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -193,7 +195,8 @@ public class ServletController {
 		InputStreamReader isr =	new InputStreamReader(upFile.getInputStream());
 		BufferedReader br = new BufferedReader(isr);
 		String line = null;
-
+		int maxSize = 500;
+		int fileSize = (int) upFile.getSize();
 		
 		while ((line =	br.readLine()) != null)	{
 			m = new HashMap<String, Object>();
@@ -213,14 +216,17 @@ public class ServletController {
 			//m.put("newAddrBun2", lineArr[12]);	//새주소_부_번	newAddrBun2
 			m.put("use_amount", lineArr[13]);	//사용_량(KWh)	usekwh
 			list.add(m);
-
+			
+			if(fileSize > maxSize) {
+				if(list.size() == maxSize) {
+					servletService.fileUp(list);
+					//list.clear();
+					list = new ArrayList<>();
+				}				
+			}
 		}
-		
-/*		for (int i = 0; i < 10; i++) {
-			System.out.println(list.get(i));
-		}
-*/
 		servletService.fileUp(list);
+		servletService.refreshData();
 				
 		br.close();
 		isr.close();

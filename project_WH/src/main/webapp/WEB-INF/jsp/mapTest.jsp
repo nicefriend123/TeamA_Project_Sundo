@@ -8,12 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 <meta name="description" content="" />
 <meta name="author" content="" />
-<title>탄소 배출 지도</title>
+<title>전기 사용량 데이터 지도</title>
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link href="../resources/css/mapTest.css" rel="stylesheet">
-<link href="../resources/css/fileUp.css" rel="stylesheet">
 <!-- bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet"/>
 <link href="../resources/css/styles.css" rel="stylesheet" />
@@ -25,12 +24,10 @@
 $(function(){
 	
 	var wmsSd, wmsSgg, wmsBjd, bjdlegend, sgglegend;
-    //var layerList = [];
     var sggcode;
     var overlay;
     
-    $(".legendTable").hide();
-    
+    $(".legendTable").hide();    
 		
 	var Base = new ol.layer.Tile({
 		name : "Base",
@@ -51,8 +48,11 @@ $(function(){
     });
 	
     $("#sdSelect").on("change", function() {
-    	map.removeLayer(sgglegend);
     	map.removeOverlay(overlay);
+    	map.removeLayer(bjdlegend);
+    	map.removeLayer(wmsSd);
+    	map.removeLayer(sgglegend);
+
     	var sd_CQL = "sd_cd="+$("#sdSelect").val();
        	var test = $("#sdSelect option:checked").text();
        	
@@ -65,20 +65,19 @@ $(function(){
      	    	map.removeLayer(wmsSd);
      	     		
               	var geom = result.at(-1);
-              	//console.log(geom);
      	     		
               	map.getView().fit([geom.xmin, geom.ymin, geom.xmax, geom.ymax], {duration : 500});
      	     		
     	        wmsSd = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
+    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
     	  	        	params : {
-    	  	          		'VERSION' : '1.1.0', // 2. 버전
-    	  	          		'LAYERS' : 'teamA4:ta4sdview', // 3. 작업공간:레이어 명
+    	  	          		'VERSION' : '1.1.0',
+    	  	          		'LAYERS' : 'teamA4:ta4sdview', 
     	  	          		'CQL_FILTER' : sd_CQL,
     	  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
-    	  	          		'SRS' : 'EPSG:3857', // SRID
-    	  	          		'FORMAT' : 'image/png' // 포맷
+    	  	          		'SRS' : 'EPSG:3857',
+    	  	          		'FORMAT' : 'image/png' 
     	  	        	},
     	  	        	serverType : 'geoserver',
     	  	    	}),
@@ -106,8 +105,10 @@ $(function(){
     $("#sggSelect").on("change", function(){
     	map.removeOverlay(overlay);
     	map.removeLayer(bjdlegend);
+    	map.removeLayer(sgglegend);
+    	map.removeLayer(wmsSd);
     	map.removeLayer(wmsSgg);
-    	//var sdName = $("#sdSelect").val();
+    	
     	var sggName = $("#sggSelect option:checked").text();
     	sggcode = $("#sggSelect").val(); 
     	console.log(sggcode);
@@ -125,14 +126,14 @@ $(function(){
               	
               	wmsSgg = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
+    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
     	  	        	params : {
-    	  	          		'VERSION' : '1.1.0', // 2. 버전
-    	  	          		'LAYERS' : 'teamA4:tl_bjd', // 3. 작업공간:레이어 명
+    	  	          		'VERSION' : '1.1.0', 
+    	  	          		'LAYERS' : 'teamA4:tl_bjd', 
     	  	          		'CQL_FILTER' : sd_CQL,
     	  	          		'BBOX' : [1.386872E7, 3906626.5, 1.4428071E7, 4670269.5], 
-    	  	          		'SRS' : 'EPSG:3857', // SRID
-    	  	          		'FORMAT' : 'image/png' // 포맷
+    	  	          		'SRS' : 'EPSG:3857', 
+    	  	          		'FORMAT' : 'image/png'  
     	  	        	},
     	  	        	serverType : 'geoserver',
     	  	    	}),
@@ -166,14 +167,14 @@ $(function(){
 	    		 
 	    		sgglegend = new ol.layer.Tile({
 		  	       	source : new ol.source.TileWMS({
-		  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
+		  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
 		  	        	params : {
-		  	          		'VERSION' : '1.1.0', // 2. 버전
-		  	          		'LAYERS' : 'teamA4:sggEqual', // 3. 작업공간:레이어 명
+		  	          		'VERSION' : '1.1.0', 
+		  	          		'LAYERS' : 'teamA4:sggEqual', 
 		  	          		'CQL_FILTER' : sd_CQL,
 		  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
-		  	          		'SRS' : 'EPSG:3857', // SRID
-		  	          		'FORMAT' : 'image/png' // 포맷
+		  	          		'SRS' : 'EPSG:3857', 
+		  	          		'FORMAT' : 'image/png' 
 		  	        		},
 		  	        		serverType : 'geoserver',
 		  	    		}),
@@ -188,14 +189,14 @@ $(function(){
 	  	    		
 	  	    		sgglegend = new ol.layer.Tile({
 		  	       		source : new ol.source.TileWMS({
-		  	    			url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
+		  	    			url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
 		  	        		params : {
-		  	          			'VERSION' : '1.1.0', // 2. 버전
-		  	          			'LAYERS' : 'teamA4:sggNatural', // 3. 작업공간:레이어 명
+		  	          			'VERSION' : '1.1.0', 
+		  	          			'LAYERS' : 'teamA4:sggNatural', 
 		  	          			'CQL_FILTER' : sd_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
-		  	          			'SRS' : 'EPSG:3857', // SRID
-		  	          			'FORMAT' : 'image/png' // 포맷
+		  	          			'SRS' : 'EPSG:3857', 
+		  	          			'FORMAT' : 'image/png' 
 		  	        		},
 		  	        		serverType : 'geoserver',
 		  	    		}),
@@ -212,7 +213,6 @@ $(function(){
 		           	dataType : "json",
 		   	        data : {"place" : place , "select" : select},
 		     	    success : function(result) {
-		     	    	//console.log(result)
 			     	    legendTable(result, select);
 		     	    },
 		     	    error : function() {
@@ -233,14 +233,14 @@ $(function(){
 	  				
 	  				bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
-			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
+			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
 			  	        	params : {
-		  		          		'VERSION' : '1.1.0', // 2. 버전
-		  	    	      		'LAYERS' : 'teamA4:bjdEqual', // 3. 작업공간:레이어 명
+		  		          		'VERSION' : '1.1.0', 
+		  	    	      		'LAYERS' : 'teamA4:bjdEqual', 
 		  	        	  		'CQL_FILTER' : sgg_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
-		  	          			'SRS' : 'EPSG:3857', // SRID
-		  	          			'FORMAT' : 'image/png' // 포맷
+		  	          			'SRS' : 'EPSG:3857', 
+		  	          			'FORMAT' : 'image/png' 
 		  	        		},
 		  	        		serverType : 'geoserver',
 		  	    		}),
@@ -254,14 +254,14 @@ $(function(){
 				
 	          	 	bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
-			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', // 1. 레이어 URL
+			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
 			  	        	params : {
-		  		          		'VERSION' : '1.1.0', // 2. 버전
-		  	    	      		'LAYERS' : 'teamA4:bjdNatural', // 3. 작업공간:레이어 명
+		  		          		'VERSION' : '1.1.0', 
+		  	    	      		'LAYERS' : 'teamA4:bjdNatural', 
 		  	        	  		'CQL_FILTER' : sgg_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
-		  	          			'SRS' : 'EPSG:3857', // SRID
-		  	          			'FORMAT' : 'image/png' // 포맷
+		  	          			'SRS' : 'EPSG:3857', 
+		  	          			'FORMAT' : 'image/png' 
 		  	        		},
 		  	        		serverType : 'geoserver',
 		  	    		}),
@@ -278,7 +278,6 @@ $(function(){
 		           	dataType : "json",
 		   	        data : {"place" : place , "select" : select},
 		     	    success : function(result) {
-		     	    	//console.log(result)
 		     	    	legendTable(result, select);
 		     	    },
 		     	    error : function() {
@@ -305,16 +304,13 @@ $(function(){
 	    
 	    let content = document.createElement('div');
 	    content.setAttribute("class", "popup-content");
-	    //content.classList.add('popup-content');
 	    
 	    container.appendChild(content);
 	    document.body.appendChild(container);
 	    
-	    var coordinate = evt.coordinate; // 클릭한 지도 좌표
-	    
-		//console.log(map.getLayers().getArray());
-		
-		const wmsLayer = map.getLayers().getArray().filter(layer => {
+	    var coordinate = evt.coordinate; 
+ 
+	    const wmsLayer = map.getLayers().getArray().filter(layer => {
 	        return layer.get("name") === 'wms';
 	    })[0];
 		
@@ -323,10 +319,6 @@ $(function(){
 		
 		const param = source.getParams();
 		
-		//console.log(source);
-		//console.log(param);
-		//console.log(param['LAYERS']);
-		
 	    const layerName = param['LAYERS'];
 		
 		const url = source.getFeatureInfoUrl(coordinate, map.getView().getResolution() || 0, 'EPSG:3857', {
@@ -334,93 +326,61 @@ $(function(){
 			INFO_FORMAT: 'application/json'
 		});
 		
-		//console.log(url);
-			
-		// GetFeatureInfo URL이 유효할 경우
-		if (url)
-		{
+		if (url) {
 			const request = await fetch(url.toString(), { method: 'GET' }).catch(e => alert(e.message));
 
-			// 응답이 유효할 경우
-			if (request)
-			{
-				// 응답이 정상일 경우
-				if (request.ok)
-				{
+			if (request) {
+				if (request.ok) {
 					const json = await request.json();
 
-					// 객체가 하나도 없을 경우
-					if (json.features.length === 0)
-					{
+					if (json.features.length === 0) {
 						overlay.setPosition(undefined);
-					}
+					
+					} else {
+							const feature = new ol.format.GeoJSON().readFeature(json.features[0]);
 
-					// 객체가 있을 경우
-					else
-					{	
+							const vector = new ol.source.Vector({ features: [ feature ] });
+							
+							var usageValue = feature.get('totalusage');
+							var placeName =  feature.get('bjd_nm');
 						
-						//ajax로 사용량 불러오기
+							if(usageValue == null){
+								usageValue = feature.get('amount');
+								placeName =  feature.get('sgg_nm');
+							} 
 						
-						// GeoJSON에서 Feature를 생성
-						const feature = new ol.format.GeoJSON().readFeature(json.features[0]);
-
-						// 생성한 Feature로 VectorSource 생성
-						const vector = new ol.source.Vector({ features: [ feature ] });
-						//console.log(vector)
-						
-						var usageValue = feature.get('totalusage');
-						var placeName =  feature.get('bjd_nm');
-						
-						if(usageValue == null){
-							usageValue = feature.get('amount');
-							placeName =  feature.get('sgg_nm');
-						} 
-						
-					    content.innerHTML = '<div class="info">' + placeName + 
-					    					'</div><div class="info">' + usageValue + ' kwh' +
-					    					'</div>';
+					    	content.innerHTML = '<div class="info">' + placeName + 
+					    						'</div><div class="info">' + usageValue + ' kwh' +
+					    						'</div>';
 					    
-					    overlay = new ol.Overlay({
-					        element: container,
-					      });
+					    	overlay = new ol.Overlay({
+					        	element: container,
+					      	});
 						
-					    map.addOverlay(overlay);
-					    overlay.setPosition(coordinate);
-
-					}
-				}
-
-				// 아닐 경우
-				else
-				{
+					    	map.addOverlay(overlay);
+						    overlay.setPosition(coordinate);
+						}
+					
+				} else {
 					alert(request.status);
 				}
 			}
-		}
-			
+		}			
 	});		
 	
-
-		
 	
   	
- 	//파일 업로드
 	$("#upLodadBtn").click(function(){
 		
 		var formData = new FormData();
 		var inputFile = $("input[name='upFile']");
-		//var inputFile = $("#fileInput").val();
 		var files = inputFile[0].files;
-		//console.log(files);
 		
 		for(var i =0; i<files.length; i++){
 			
 			formData.append("upFile", files[i]);
 		}
-		
-		//txt인지 체크
-		
-		//업로드
+
  		$.ajax({
 			url : "fileUp.do",
 			type : "post",
@@ -453,7 +413,6 @@ $(function(){
 	    console.log(data.loaded, data.total, data.bitrate);
 	});
 
- 	//파일업2
  	$("#fileInput").on('change', function(){  
  		var fileType = $(this).val().split('/').pop().split('\\').pop().split('.').pop();
  		
@@ -461,12 +420,12 @@ $(function(){
  			alert("업로드 가능한 파일 유형이 아닙니다.");
  			return false;
  		}
-		if(window.FileReader){  // modern browser
+		if(window.FileReader){ 
 			var filename = $(this)[0].files[0].name;
 		} else {  
  			var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
 		}
- 	 		// 추출한 파일명 삽입
+
 		$("#userfile").val(filename);
 	});
 })   
@@ -497,6 +456,7 @@ function legendTable(data, select){
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+	<!-- header -->
 	<%@ include file="./header.jsp" %>
 </nav>
 <div id="layoutSidenav">
@@ -566,7 +526,7 @@ function legendTable(data, select){
 			<div id="toastBox"></div>
 			<div id="map-popup"></div>
         </main>
-        <footer class="py-4 bg-light mt-auto">
+        <footer class="py-4 bg-dark mt-auto">
         	<div class="container-fluid px-4">
             	<div class="d-flex align-items-center justify-content-between small">
             	</div>
@@ -584,7 +544,7 @@ function showToast(message) {
 	toast.style.display = 'block';
     setTimeout(function() {
         toast.style.display = 'none';
-    }, 1000); // 1초
+    }, 1000); 
 }
 
 function showUploadingToast(message){
@@ -599,8 +559,6 @@ function hideToast(){
 }
 
 </script>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../resources/js/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>

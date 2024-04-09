@@ -8,12 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 <meta name="description" content="" />
 <meta name="author" content="" />
-<title>통계</title>
+<title>사용량 통계</title>
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link href="../resources/css/mapTest.css" rel="stylesheet">
-<link href="../resources/css/fileUp.css" rel="stylesheet">
 <!-- bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet"/>
 <link href="../resources/css/styles.css" rel="stylesheet" />
@@ -51,13 +50,11 @@
 		
 		totalChart.unshift(['지역명', '배출량']);
 
-		// Create the data table.
 	    var data = new google.visualization.arrayToDataTable(totalChart);
     	
-    	// Set chart options
         var options = {
             "title": '시도 별 탄소배출량',
-            bars: 'horizontal', // Required for Material Bar Charts.
+            bars: 'horizontal', 
             hAxis: {format: 'decimal'},
             height: 600,
             colors: ['#1b9e77'],
@@ -66,7 +63,6 @@
             	},
         };
 
-	    // chart 보이기
 	    var obj = document.getElementById('chart_div');
 	    var chart = new google.visualization.BarChart(obj);
 	    chart.draw(data, options);
@@ -74,13 +70,11 @@
 	
     function renderTable(chartData) {
         let tbodyData = [];
-        //for (const iterator of chartData) {
         for (var i = 0; i < chartData.length; i++) {
             tbodyData.push(
             		"<tr><td>" + chartData[i].sd_nm + "</td><td>" + chartData[i].usage + "</td></tr>"
             )
         }
-        //console.log(tbodyData);
         document.querySelector('#chartTB > tbody').innerHTML = tbodyData.join("");
     }
             

@@ -327,8 +327,6 @@ public class ServletController {
 	@PostMapping("/bjdLegendTable.do")
 	public @ResponseBody String bjdLegendTable(@RequestParam("place") String place, @RequestParam("select") String select) {
 		
-		
-		//System.out.println(select);
 		List<Map<String, Object>> bjdLegend = new ArrayList<Map<String, Object>>();
 		
 		if (select.equals("3")) {

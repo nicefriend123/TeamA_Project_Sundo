@@ -213,10 +213,10 @@ $(function(){
 		   	        data : {"place" : place , "select" : select},
 		     	    success : function(result) {
 		     	    	//console.log(result)
-			     	    	legendTable(result, select);	     	    		
+			     	    legendTable(result, select);
 		     	    },
 		     	    error : function() {
-		     	    	alert("범례를 선택하세요");
+		     	    	alert("통신 오류");
 		     	    }
 		 	    })
 		    	
@@ -282,13 +282,15 @@ $(function(){
 		     	    	legendTable(result, select);
 		     	    },
 		     	    error : function() {
-		     	    	alert("범례를 선택하세요");
+		     	    	alert("통신 오류");
 		     	    }
 		 	    })
 	    	}
 	    	
 	    if($("#legendSelect").val() != "범례 선택"){
 	    	$(".legendTable").show();	    	
+	    } else {
+	    	alert("범례를 선택하세요");
 	    }
 	    
   		});
@@ -483,7 +485,7 @@ function legendTable(data, select){
     	colors = "ntimg";
     }
    	
-    for (var i = 0; i < data.length - 1 ; i++) {
+    for (var i = 0; i < data.length ; i++) {
         tbodyData.push(
         		"<tr><td><img height='100%;' src='../resources/assets/img/" + colors + (i + 1) + ".png'/> </td><td style='font-size: 10px'>" + data[i].start + " ~ " + data[i].end  + "</td></tr>"
         )

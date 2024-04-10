@@ -21,13 +21,17 @@
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
 <style type="text/css">
 #chart_div{
-	width: 100%; 
-	height:auto;
+	width: 80%; 
+	height: 460px;
 }
 #chart_tb{
-	margin-left:100px;
-	width: 70%; 
-	height:auto;
+	margin-left:80px;
+	width: 65%; 
+	height: 460px;
+	overflow: auto;
+}
+.card-header{
+	text-align: center;
 }
 </style>
 <script type="text/javascript">
@@ -36,14 +40,14 @@
 
 	let chartData = [];
 	chartData = ${sdChart};	
+	let title = "전국 탄소 배출량 TOP 10";
 
 	function drawChart() {
 		
-		renderTable(chartData);
-		
+		renderTable(chartData);		
  		let totalChart = [];
 		
-		for (var i = 0; i < chartData.length; i++) {
+		for (var i = 0; i < 10; i++) {
 			let element = [chartData[i].sd_nm, chartData[i].usage];
 			totalChart.push(element);
 		}
@@ -53,19 +57,21 @@
 	    var data = new google.visualization.arrayToDataTable(totalChart);
     	
         var options = {
-            "title": '시도 별 탄소배출량',
+           "title": title, 
             bars: 'horizontal', 
             hAxis: {format: 'decimal'},
-            height: 600,
+            width: '60%',
+            height: '450px',
             colors: ['#1b9e77'],
             legend: {
-            	position: 'none'
+            	 position: 'none' 
             	},
         };
 
 	    var obj = document.getElementById('chart_div');
 	    var chart = new google.visualization.BarChart(obj);
 	    chart.draw(data, options);
+	    window.addEventListener('resize', chart_div, false);
   	}
 	
     function renderTable(chartData) {
@@ -95,8 +101,9 @@ $(function(){
      	    success : function(result) {
      	    	var sggdata = JSON.parse(result);
      	    	chartData = sggdata;
+     	    	title =  sido + " 탄소배출량 TOP 10";
      	    	google.charts.setOnLoadCallback(drawChart);
-     	    	document.querySelector(".card-header").innerText = "시군구별 탄소 배출량";
+     	    	document.querySelector(".card-header").innerText = sido + " 탄소 배출량";
      	    	
            	},
            	error : function() {
@@ -123,7 +130,7 @@ $(function(){
         	<div class="map_sideMenu">
         		<!-- 지역별 사용량 -->
         		<div class="form-group mb-3">
-	        		<label class="menuTitle">시도별 탄소 배출량</label>
+	        		<label class="menuTitle">지역 별 탄소 배출량</label>
 	        		<div class="input-group mb-2">
 	        				<select id="sdChart" class="form-select form-select-sm">
 								<option>시도 선택</option>
@@ -134,21 +141,20 @@ $(function(){
 	        		</div>     		
 					<div class="btn btn-secondary btn-sm" id ="chartView">보기</div>
         		</div>
-
         	</div>
 			<div class="map_content">
 				<div id="chart_div">
 				</div>
 				<div id="chart_tb">
 					<div class="card mb-4">
-						<div class="card-header">시도별 탄소 배출량</div>
+						<div class="card-header">전국 탄소 배출량</div>
 						<div class="card-body">
 							<div class="datatable-wrapper fixed-columns">
 								<table id="chartTB" class="datatable-table">
 									<thead>
 										<tr>
 											<th>지역 명</th>
-											<th>탄소 배출량</th>
+											<th>탄소 배출량(kwh)</th>
 										</tr>
 									</thead>
 									<tbody></tbody>
@@ -159,7 +165,7 @@ $(function(){
 				</div>
       		</div>
         </main>
-        <footer class="py-4 bg-light mt-auto">
+        <footer class="py-4 bg-dark mt-auto">
         	<div class="container-fluid px-4">
             	<div class="d-flex align-items-center justify-content-between small"></div>
           	</div>

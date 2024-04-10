@@ -91,6 +91,7 @@
 		from "TB_CARBON_A4" 
 		where sd_nm is not null 
 		group by sd_nm 
+		order by usage desc 
 	</select>
 	
 	<select id="sdChart" parameterType="String" resultType="Map">
@@ -98,6 +99,7 @@
 		from "TB_CARBON_A4" 
 		where sd_nm = #{sdName}
 		group by sgg_nm 
+		order by usage desc 
 	</select>
 	
 	<select id="sggLegendE" parameterType="String" resultType="Map">

@@ -139,7 +139,6 @@ public class ServletController {
 		try {
 			String sdChart = mapper.writeValueAsString(totalChart);
 			sdChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(totalChart);
-			System.out.println(sdChart);
 			model.addAttribute("sdChart", sdChart);
 			
 		} catch (JsonProcessingException e) {
@@ -161,7 +160,7 @@ public class ServletController {
 		try {
 			sggChart = mapper.writeValueAsString(sdChart);
 			sggChart = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(sggChart);
-			
+			System.out.println(sggChart);
 			
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();

@@ -35,17 +35,6 @@ public class ServletController {
 	@Resource(name = "ServletService")
 	private ServletService servletService;
 
-	/*
-	@RequestMapping(value = "/main.do")
-	public String mainTest(ModelMap model) throws Exception {
-		System.out.println("sevController.java - mainTest()");
-		
-		String str = servletService.addStringTest("START! ");
-		model.addAttribute("resultStr", str);
-		
-		return "main/main";
-	}
-	*/
 
 	@RequestMapping(value = "/main.do")
 	public String mainTest() throws Exception {		
@@ -71,6 +60,15 @@ public class ServletController {
 		}
 		
 		return "mapTest";
+	}
+	
+	@RequestMapping("/carbonMap.do")
+	public String carbonMap(Model model) {
+		
+		List<Map<String, Object>> sdlist = servletService.sdList();
+		model.addAttribute("sdlist", sdlist);
+				
+		return "carbonMap";
 	}
 	
 	@PostMapping("/maptest.do")

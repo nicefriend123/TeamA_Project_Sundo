@@ -70,10 +70,10 @@ $(function(){
      	     		
     	        wmsSd = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
+    	  	    		url : 'http://localhost/geoserver/testhere/wms', 
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0',
-    	  	          		'LAYERS' : 'teamA4:ta4sdview', 
+    	  	          		'LAYERS' : 'testhere:el_test', 
     	  	          		'CQL_FILTER' : sd_CQL,
     	  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
     	  	          		'SRS' : 'EPSG:3857',
@@ -126,12 +126,12 @@ $(function(){
               	
               	wmsSgg = new ol.layer.Tile({
     	  	       	source : new ol.source.TileWMS({
-    	  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
+    	  	    		url : 'http://localhost/geoserver/testhere/wms', 
     	  	        	params : {
     	  	          		'VERSION' : '1.1.0', 
-    	  	          		'LAYERS' : 'teamA4:tl_bjd', 
+    	  	          		'LAYERS' : 'testhere:tl_bjd', 
     	  	          		'CQL_FILTER' : sd_CQL,
-    	  	          		'BBOX' : [1.386872E7, 3906626.5, 1.4428071E7, 4670269.5], 
+    	  	          		'BBOX' : [1.3873946E7,3906626.5,1.4428045E7,4670269.5], 
     	  	          		'SRS' : 'EPSG:3857', 
     	  	          		'FORMAT' : 'image/png'  
     	  	        	},
@@ -167,10 +167,10 @@ $(function(){
 	    		 
 	    		sgglegend = new ol.layer.Tile({
 		  	       	source : new ol.source.TileWMS({
-		  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
+		  	    		url : 'http://localhost/geoserver/testhere/wms', 
 		  	        	params : {
 		  	          		'VERSION' : '1.1.0', 
-		  	          		'LAYERS' : 'teamA4:sggEqual', 
+		  	          		'LAYERS' : 'testhere:sggEqual', 
 		  	          		'CQL_FILTER' : sd_CQL,
 		  	          		'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          		'SRS' : 'EPSG:3857', 
@@ -189,10 +189,10 @@ $(function(){
 	  	    		
 	  	    		sgglegend = new ol.layer.Tile({
 		  	       		source : new ol.source.TileWMS({
-		  	    			url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
+		  	    			url : 'http://localhost/geoserver/testhere/wms', 
 		  	        		params : {
 		  	          			'VERSION' : '1.1.0', 
-		  	          			'LAYERS' : 'teamA4:sggNatural', 
+		  	          			'LAYERS' : 'testhere:sggNatural',
 		  	          			'CQL_FILTER' : sd_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          			'SRS' : 'EPSG:3857', 
@@ -233,10 +233,10 @@ $(function(){
 	  				
 	  				bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
-			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
+			  	    		url : 'http://localhost/geoserver/testhere/wms', 
 			  	        	params : {
 		  		          		'VERSION' : '1.1.0', 
-		  	    	      		'LAYERS' : 'teamA4:bjdEqual', 
+		  	    	      		'LAYERS' : 'testhere:bjdEqual', 
 		  	        	  		'CQL_FILTER' : sgg_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          			'SRS' : 'EPSG:3857', 
@@ -254,10 +254,10 @@ $(function(){
 				
 	          	 	bjdlegend = new ol.layer.Tile({
 			  	       	source : new ol.source.TileWMS({
-			  	    		url : 'http://wisejia.iptime.org:8080/geoserver/teamA4/wms', 
+			  	    		url : 'http://localhost/geoserver/testhere/wms', 
 			  	        	params : {
 		  		          		'VERSION' : '1.1.0', 
-		  	    	      		'LAYERS' : 'teamA4:bjdNatural', 
+		  	    	      		'LAYERS' : 'testhere:bjdNatural', 
 		  	        	  		'CQL_FILTER' : sgg_CQL,
 		  	          			'BBOX' : [1.387148932991382E7, 3910407.083927817, 1.46800091844669E7, 4666488.829376992], 
 		  	          			'SRS' : 'EPSG:3857', 
@@ -344,8 +344,7 @@ $(function(){
 							var usageValue = feature.get('totalusage');
 							var placeName =  feature.get('bjd_nm');
 						
-							if(usageValue == null){
-								usageValue = feature.get('amount');
+							if(placeName == null){
 								placeName =  feature.get('sgg_nm');
 							} 
 						
@@ -419,7 +418,7 @@ $(function(){
 		if(window.FileReader){ 
 			var filename = $(this)[0].files[0].name;
 		} else {  
- 			var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출
+ 			var filename = $(this).val().split('/').pop().split('\\').pop();
 		}
 
 		$("#userfile").val(filename);

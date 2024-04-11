@@ -72,6 +72,7 @@
 
 	<update id="refreshData">
 		REFRESH MATERIALIZED VIEW a4sgggrade2 with data;
+		REFRESH MATERIALIZED VIEW a4sgggrade with data;
 		REFRESH MATERIALIZED VIEW a4bjdtable with data;
 	</update>
 

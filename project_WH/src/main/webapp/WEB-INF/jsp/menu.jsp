@@ -2,7 +2,7 @@
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
 	<div class="sb-sidenav-menu">
 		<div class="nav">
-			<a class="nav-link" href="/maptest.do">
+			<a class="nav-link" href="/carbonMap.do">
 				<i class="xi-map-o xi-x" data-bs-toggle="tooltip" data-bs-placement="right" title="지도"></i>
 			</a>
 			<a class="nav-link" href="/chart.do">

@@ -38,7 +38,7 @@ public class ServletController {
 
 	@RequestMapping(value = "/main.do")
 	public String mainTest() throws Exception {		
-		return "mapTest";
+		return "carbonMap";
 	}
 		
 	@RequestMapping("/maptest.do")

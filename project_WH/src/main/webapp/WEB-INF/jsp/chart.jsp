@@ -47,10 +47,18 @@
 		renderTable(chartData);		
  		let totalChart = [];
 		
-		for (var i = 0; i < 10; i++) {
+ 		if(chartData.length > 10){
+			for (var i = 0; i < 10; i++) {
+				let element = [chartData[i].sd_nm, chartData[i].usage];
+				totalChart.push(element);
+			}
+ 		}
+		for (var i = 0; i < chartData.length; i++) {
 			let element = [chartData[i].sd_nm, chartData[i].usage];
 			totalChart.push(element);
 		}
+ 			
+ 		
 		
 		totalChart.unshift(['지역명', '사용량']);
 

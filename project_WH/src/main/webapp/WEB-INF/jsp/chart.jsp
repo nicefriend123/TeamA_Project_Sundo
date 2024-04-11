@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 <meta name="description" content="" />
 <meta name="author" content="" />
-<title>사용량 통계</title>
+<title>전기에너지 사용량 통계</title>
 <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -40,7 +40,7 @@
 
 	let chartData = [];
 	chartData = ${sdChart};	
-	let title = "전국 탄소 배출량 TOP 10";
+	let title = "전국 전기에너지 사용량 TOP 10";
 
 	function drawChart() {
 		
@@ -52,7 +52,7 @@
 			totalChart.push(element);
 		}
 		
-		totalChart.unshift(['지역명', '배출량']);
+		totalChart.unshift(['지역명', '사용량']);
 
 	    var data = new google.visualization.arrayToDataTable(totalChart);
     	
@@ -101,9 +101,9 @@ $(function(){
      	    success : function(result) {
      	    	var sggdata = JSON.parse(result);
      	    	chartData = sggdata;
-     	    	title =  sido + " 탄소배출량 TOP 10";
+     	    	title =  sido + " 전기에너지 사용량 TOP 10";
      	    	google.charts.setOnLoadCallback(drawChart);
-     	    	document.querySelector(".card-header").innerText = sido + " 탄소 배출량";
+     	    	document.querySelector(".card-header").innerText = sido + " 전기에너지 사용량";
      	    	
            	},
            	error : function() {
@@ -130,7 +130,7 @@ $(function(){
         	<div class="map_sideMenu">
         		<!-- 지역별 사용량 -->
         		<div class="form-group mb-3">
-	        		<label class="menuTitle">지역 별 탄소 배출량</label>
+	        		<label class="menuTitle">지역 별 전기에너지 사용량</label>
 	        		<div class="input-group mb-2">
 	        				<select id="sdChart" class="form-select form-select-sm">
 								<option>시도 선택</option>
@@ -147,14 +147,14 @@ $(function(){
 				</div>
 				<div id="chart_tb">
 					<div class="card mb-4">
-						<div class="card-header">전국 탄소 배출량</div>
+						<div class="card-header">전국 전기에너지 사용량</div>
 						<div class="card-body">
 							<div class="datatable-wrapper fixed-columns">
 								<table id="chartTB" class="datatable-table">
 									<thead>
 										<tr>
 											<th>지역 명</th>
-											<th>탄소 배출량(kwh)</th>
+											<th>사용량(kwh)</th>
 										</tr>
 									</thead>
 									<tbody></tbody>

@@ -4,4 +4,4 @@
         <i class="fas fa-bars"></i>
 	</button>
 	<!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="maptest.do">전기 사용량 데이터 지도</a>
+    <a class="navbar-brand ps-3" href="maptest.do">전기에너지 사용량 데이터 지도</a>
